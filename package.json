@@ -1,0 +1,22 @@
+{
+  "name": "Financetracker",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "Backend": "cd Backend && npm run dev",
+    "Frontend": "cd Frontend/Finance-Tracker && npm run dev",
+    "dev": "concurrently \"npm run Backend\" \"npm run Frontend\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "concurrently": "^9.1.2",
+    "dotenv": "^16.4.7",
+    "express-async-handler": "^1.2.0"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  }
+}
