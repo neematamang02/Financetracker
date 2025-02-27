@@ -12,5 +12,5 @@ const ReceiptSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
-module.exports = mongoose.model("Receipt", ReceiptSchema);
+const Receipt = mongoose.model("Receipt", ReceiptSchema);
+export default Receipt;
