@@ -1,15 +1,16 @@
-const express = require("express");
-const multer = require("multer");
-const Tesseract = require("tesseract.js");
-const Receipt = require("../Models/Receipt");
-const middleware = require("../middleware/authMiddleware");
+import express from "express";
+import multer from "multer";
+import Tesseract from "tesseract.js";
+import Receipt from "../Models/Receipt.js";
+import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
+
 router.post(
   "/upload-receipt",
-  middleware,
+  authMiddleware,
   upload.single("receipt"),
   async (req, res) => {
     try {
@@ -17,6 +18,7 @@ router.post(
       const {
         data: { text },
       } = await Tesseract.recognize(imageBuffer, "eng");
+
       const amountMatch = text.match(/\$?\d+(\.\d{2})?/);
       const amount = amountMatch
         ? parseFloat(amountMatch[0].replace("$", ""))
@@ -29,6 +31,7 @@ router.post(
         store: req.body.store || "Unknown",
         category: req.body.category || "Other",
       });
+
       await receipt.save();
       res.json({ message: "Receipt processed", extractedText: text, amount });
     } catch (error) {
@@ -36,4 +39,5 @@ router.post(
     }
   }
 );
-module.exports = router;
+
+export default router;

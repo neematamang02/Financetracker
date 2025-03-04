@@ -1,9 +1,9 @@
-const express = require("express");
-const Expense = require("../Models/Expense");
-const authMiddleware = require("../middleware/authMiddleware");
-const { route } = require("./authRoutes");
+import express from "express";
+import Expense from "../Models/Expense.js";
+import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
+
 router.post("/add", authMiddleware, async (req, res) => {
   const { user_id, amount, category, store, date } = req.body;
   try {
@@ -25,10 +25,13 @@ router.get("/user/:user_id", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Error fetching expenses" });
   }
 });
+
 router.get("/filter", authMiddleware, async (req, res) => {
   const { user_id, startDate, endDate, category, store, minAmount, maxAmount } =
     req.query;
+
   let query = { user_id };
+
   if (startDate && endDate)
     query.date = { $gte: new Date(startDate), $lte: new Date(endDate) };
   if (category) query.category = category;
@@ -43,4 +46,5 @@ router.get("/filter", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Error fetching filtered expenses" });
   }
 });
-module.exports = router;
+
+export default router;
