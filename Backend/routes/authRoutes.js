@@ -10,7 +10,7 @@ const router = express.Router();
 
 // Register User
 router.post("/register", async (req, res) => {
-  const { name, email, password, monthlyIncome } = req.body; // Fixed `res.body` -> `req.body`
+  const { name, email, password, monthlyIncome } = req.body;
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({
@@ -20,7 +20,7 @@ router.post("/register", async (req, res) => {
       monthlyIncome,
     });
     await newUser.save();
-    res.status(201).json({ message: "User registered successfully" }); // Fixed typo in "message"
+    res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
     res.status(500).json({ message: "Failed to register user" });
   }
@@ -28,7 +28,7 @@ router.post("/register", async (req, res) => {
 
 // Login User
 router.post("/login", async (req, res) => {
-  const { email, password } = req.body; // Fixed `res.body` -> `req.body`
+  const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: "User not found" });
