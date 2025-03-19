@@ -1,15 +1,20 @@
-import React, { useEffect } from "react";
-import axiosInstance from "./utils/axiosInstance";
+import React from "react";
+import Layout from "./Layout/Layout";
+import { Route, Routes } from "react-router-dom";
+import routesConfig from "./routes/routesConfig";
 
 const App = () => {
-  useEffect(() => {
-    axiosInstance
-      .get("/auth/login")
-      .then((response) => console.log(response.data))
-      .catch((error) => console.error("API Error:", error));
-  }, []);
-
-  return <div className="text-blue-50">This is my Finance Tracker Project</div>;
+  return (
+    <div className="App">
+      <Layout>
+        <Routes>
+          {routesConfig.map(({ path, Component }, index) => (
+            <Route key={index} path={path} element={<Component />} />
+          ))}
+        </Routes>
+      </Layout>
+    </div>
+  );
 };
 
 export default App;

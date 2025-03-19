@@ -3,8 +3,8 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const Buttons = ({
-  to,
-  children,
+  navigateto,
+  buttontext,
   onClick,
   type = "button",
   className = "",
@@ -14,19 +14,19 @@ const Buttons = ({
 
   const handleClick = () => {
     if (!disabled) {
-      navigate(to);
+      navigate(navigateto);
     }
   };
   return (
     <button
       type={type}
-      onClick={onClick}
+      onClick={handleClick}
       className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${className} ${
         disabled ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-200"
       }`}
       disabled={disabled}
     >
-      {children}
+      {buttontext}
     </button>
   );
 };
