@@ -13,13 +13,8 @@ const Footer = () => {
           </Link>
         </li>
         <li>
-          <Link to={ROUTES.PORTFOLIO} className="hover:text-gray-900">
-            Portfolio
-          </Link>
-        </li>
-        <li>
           <Link to={ROUTES.ABOUT_ME} className="hover:text-gray-900">
-            About me
+            About Us
           </Link>
         </li>
         <li>

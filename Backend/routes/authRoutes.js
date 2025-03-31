@@ -10,7 +10,10 @@ const router = express.Router();
 
 // Register User
 router.post("/register", async (req, res) => {
-  const { name, email, password, monthlyIncome } = req.body;
+  const { name, email, password, cpassword, monthlyIncome } = req.body;
+  if (password !== cpassword) {
+    return res.status(400).json({ message: "Passwords do not match" });
+  }
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({

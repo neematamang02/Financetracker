@@ -29,13 +29,8 @@ const Navbar = () => {
           </Link>
         </li>
         <li>
-          <Link to={ROUTES.PORTFOLIO} className="hover:text-primary">
-            Portfolio
-          </Link>
-        </li>
-        <li>
           <Link to={ROUTES.ABOUT_ME} className="hover:text-primary">
-            About Me
+            About Us
           </Link>
         </li>
         <li>
@@ -46,11 +41,17 @@ const Navbar = () => {
       </ul>
 
       {/* Contact Me Button for Desktop */}
-      <div className="hidden md:block">
+      <div className="hidden md:flex gap-2">
         <Buttons
-          buttontext="Contact Me"
-          className="hover:bg-primary hover:text-white text-primary py-2 px-4 rounded border-2 border-primary"
-          navigateto={ROUTES.CONTACT_FORM}
+          buttontext="Login"
+          className="hover:bg-gray-400 hover:text-black text-primary py-2 px-4 rounded border-2 border-primary cursor-pointer"
+          navigateto={ROUTES.Login_Page}
+        />
+
+        <Buttons
+          buttontext="Register"
+          className="hover:bg-gray-400 hover:text-black py-2 px-4 rounded border-2 border-primary cursor-pointer"
+          navigateto={ROUTES.Register_page}
         />
       </div>
 
@@ -85,20 +86,11 @@ const Navbar = () => {
           </li>
           <li>
             <Link
-              to={ROUTES.PORTFOLIO}
-              className="hover:text-primary"
-              onClick={toggleMenu}
-            >
-              Portfolio
-            </Link>
-          </li>
-          <li>
-            <Link
               to={ROUTES.ABOUT_ME}
               className="hover:text-primary"
               onClick={toggleMenu}
             >
-              About Me
+              About Us
             </Link>
           </li>
           <li>
@@ -110,12 +102,18 @@ const Navbar = () => {
               Testimonials
             </Link>
           </li>
-          <li>
+          <li className="flex flex-col gap-2">
             <Buttons
-              buttontext="Contact Me"
+              buttontext="Login"
               className="hover:bg-primary hover:text-white text-primary py-2 px-4 rounded border-2 border-primary w-full"
-              navigateto={ROUTES.CONTACT_FORM}
+              navigateto={ROUTES.Login_Page}
               onClick={toggleMenu}
+            />
+
+            <Buttons
+              buttontext="Register"
+              className="hover:bg-primary hover:text-white text-primary py-2 px-4 rounded border-2 border-primary"
+              navigateto={ROUTES.Register_page}
             />
           </li>
         </ul>

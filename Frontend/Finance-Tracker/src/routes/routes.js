@@ -1,9 +1,10 @@
 const ROUTES = {
   HOME: "/",
-  PORTFOLIO: "/portfolio",
   ABOUT_ME: "/about-me",
   TESTIMONIALS: "/testimonials",
   CONTACT_FORM: "/contact-form",
+  Login_Page: "/Loginpg",
+  Register_page: "/Registerpg",
 };
 
 export default ROUTES;
