@@ -25,7 +25,7 @@ const Loginpg = () => {
       );
       // Save token returned from the server
       localStorage.setItem("token", response.data.token);
-      navigate(ROUTES.HOME);
+      navigate(ROUTES.User_dash);
     } catch (err) {
       console.error(err);
       setError(

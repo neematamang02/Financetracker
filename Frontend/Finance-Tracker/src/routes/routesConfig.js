@@ -5,6 +5,7 @@ import ContactForm from "../Pages/ContactForm";
 import ROUTES from "./routes";
 import Loginpg from "../Pages/Login&register/Loginpg";
 import Registerpg from "../Pages/Login&register/Registerpg";
+import Userdash from "../Pages/Userdashboard/Userdash";
 
 const routesConfig = [
   { path: ROUTES.HOME, Component: Homepage },
@@ -13,6 +14,7 @@ const routesConfig = [
   { path: ROUTES.CONTACT_FORM, Component: ContactForm },
   { path: ROUTES.Login_Page, Component: Loginpg },
   { path: ROUTES.Register_page, Component: Registerpg },
+  { path: ROUTES.User_dash, Component: Userdash },
 ];
 
 export default routesConfig;
