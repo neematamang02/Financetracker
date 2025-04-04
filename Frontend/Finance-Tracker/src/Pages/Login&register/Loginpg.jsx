@@ -5,6 +5,7 @@ import { expensebg2 } from "../../assets/images";
 import { Link, useNavigate } from "react-router-dom";
 import ROUTES from "../../routes/routes";
 import axios from "axios";
+import DASH_ROUTES from "../../routes/dashboardroutes";
 
 const Loginpg = () => {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ const Loginpg = () => {
       );
       // Save token returned from the server
       localStorage.setItem("token", response.data.token);
-      navigate(ROUTES.User_dash);
+      navigate(DASH_ROUTES.User_dash);
     } catch (err) {
       console.error(err);
       setError(

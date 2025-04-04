@@ -5,7 +5,7 @@ const ROUTES = {
   CONTACT_FORM: "/contact-form",
   Login_Page: "/Loginpg",
   Register_page: "/Registerpg",
-  User_dash: "/Userdash",
+  DashBoard: "/dashboard",
 };
 
 export default ROUTES;

@@ -1,7 +1,11 @@
 import React from "react";
 import Layout from "./Layout/Layout";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import routesConfig from "./routes/routesConfig";
+import ROUTES from "./routes/routes";
+import Dashboardlayout from "./Layout/Dashboardlayout";
+import DASH_ROUTES from "./routes/dashboardroutes";
+import dashboardroutesconfig from "./routes/dashboardroutesconfig";
 
 const App = () => {
   return (
@@ -11,6 +15,13 @@ const App = () => {
           {routesConfig.map(({ path, Component }, index) => (
             <Route key={index} path={path} element={<Component />} />
           ))}
+          <Route path={DASH_ROUTES.DashBoard} element={<Dashboardlayout />}>
+            <Route index element={<Navigate to="userdash" />} />
+            {dashboardroutesconfig.map(({ path, Component }, index) => (
+              <Route key={index} path={path} element={<Component />} />
+            ))}
+          </Route>
+          {/* <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} /> */}
         </Routes>
       </Layout>
     </div>
