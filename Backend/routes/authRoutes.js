@@ -53,4 +53,11 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// Logout user
+router.get("/logout", async (req, res) => {
+  res.status(200).json({
+    message: "Logout endpoint hit. Remove token from client storage.",
+  });
+});
+
 export default router;

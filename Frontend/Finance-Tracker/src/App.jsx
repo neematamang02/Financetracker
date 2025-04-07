@@ -2,7 +2,6 @@ import React from "react";
 import Layout from "./Layout/Layout";
 import { Navigate, Route, Routes } from "react-router-dom";
 import routesConfig from "./routes/routesConfig";
-import ROUTES from "./routes/routes";
 import Dashboardlayout from "./Layout/Dashboardlayout";
 import DASH_ROUTES from "./routes/dashboardroutes";
 import dashboardroutesconfig from "./routes/dashboardroutesconfig";
