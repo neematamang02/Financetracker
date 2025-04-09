@@ -13,10 +13,14 @@ import ROUTES from "../routes/routes";
 import DASH_ROUTES from "../routes/dashboardroutes";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
+import Useuser from "../components/Useuser";
 
 const Dashboardlayout = () => {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { user, loading, error } = Useuser();
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error loading user data: {error.message}</p>;
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -61,7 +65,7 @@ const Dashboardlayout = () => {
               alt="profile"
               className="rounded-full h-12 w-12"
             />
-            <p className="mt-4">Mr. Dummy</p>
+            <p className="mt-4">Mr/Mrs. {user?.name || "User"}</p>
           </div>
           <div className="p-4 text-lg font-semibold border-b border-gray-700">
             Dashboard

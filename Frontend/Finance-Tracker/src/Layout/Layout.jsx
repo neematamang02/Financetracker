@@ -6,7 +6,8 @@ import DASH_ROUTES from "../routes/dashboardroutes";
 
 const Layout = ({ children }) => {
   const location = useLocation();
-  const hideNabbar = location.pathname.startsWith(DASH_ROUTES.User_dash);
+  const hideNabbar = location.pathname.startsWith(DASH_ROUTES.DashBoard);
+
   return (
     <div className="flex flex-col min-h-screen">
       {!hideNabbar && <Navbar />}

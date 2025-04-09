@@ -1,12 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Labelcharts from "../../components/Labelcharts";
+import Useuser from "../../components/Useuser";
 
 const Userdash = () => {
+  const { user, loading, error } = Useuser();
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error loading user data: {error.message}</p>;
   return (
     <>
       <div className="dashboardallcontents">
         <div className="Username">
-          <h1 className="font-bold text-3xl">Hello Neema !!</h1>
+          <h1 className="font-bold text-3xl">Hello {user?.name || "User"}!!</h1>
           <p className="text-gray-500">Welcome back !</p>
         </div>
         <div className="grid gap-3 mt-5 sm:grid-cols-none lg:grid-cols-3 xl:grid-cols-3">

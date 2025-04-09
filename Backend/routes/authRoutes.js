@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import User from "../Models/User.js";
+import authMiddleware from "../middleware/authMiddleware.js";
 
 dotenv.config();
 
@@ -50,6 +51,21 @@ router.post("/login", async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: "Login failed" });
+  }
+});
+
+//logged in user
+router.get("/me", authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select(
+      "name email monthlyIncome"
+    );
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: "server error" });
   }
 });
 
