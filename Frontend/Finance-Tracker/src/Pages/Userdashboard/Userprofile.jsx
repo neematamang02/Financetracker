@@ -1,20 +1,28 @@
 import React from "react";
 import { expensebg } from "../../assets/images";
+import Buttons from "../../components/Buttons";
 
 const Userprofile = () => {
   return (
     <>
-      <div className="Userprofile">
-        <div className="userprofileimg">
+      <div className="Userprofile p-5">
+        <div className="userprofiletitle">
+          <header clas sName="font-bold text-3xl">UserProfile</header>
+        </div>
+        <div className="userprofileimg flex flex-col justify-center mb-8">
           <img
             src="https://dummycomp.shopespot.com/uploads/partner/254/promo_images/2024/05/dummy-user.png"
             alt="userimage"
-            className="rounded-full object-cover h-40 w-40"
+            className="rounded-full object-cover h-40 w-40 m-auto"
           />
+          <Buttons
+            className="bg-green-700 text-white mt-3 w-52 m-auto"
+            buttontext={"Upload image here"}
+          ></Buttons>
         </div>
         <form
           id="profileForm"
-          class="bg-white/80 backdrop-blur-md rounded-2xl shadow-lg p-8 space-y-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5"
+          class="bg-white/80 backdrop-blur-md rounded-2xl shadow-lg p-8 space-y-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 m-auto xl:w-3xl"
         >
           <div class="space-y-2">
             <label for="name" class="block text-sm font-medium text-gray-700">
