@@ -28,3 +28,24 @@ const App = () => {
 };
 
 export default App;
+// import {
+//   SignedIn,
+//   SignedOut,
+//   SignInButton,
+//   UserButton,
+// } from "@clerk/clerk-react";
+
+// export default function App() {
+//   return (
+//     <header className="container mx-auto flex justify-end mt-4">
+//       <SignedOut>
+//         <button className="bg-zinc-800 py-2 px-4 text-white rounded-lg cursor-pointer hover:bg-zinc-800/80 duration-200">
+//           <SignInButton />
+//         </button>
+//       </SignedOut>
+//       <SignedIn>
+//         <UserButton />
+//       </SignedIn>
+//     </header>
+//   );
+// }
