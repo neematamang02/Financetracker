@@ -9,6 +9,7 @@ import Userdash from "../Pages/Userdashboard/Userdash";
 import Transaction from "../Pages/Userdashboard/Transaction";
 import Userprofile from "../Pages/Userdashboard/Userprofile";
 import Reports from "../Pages/Userdashboard/Reports";
+import Forgetpassword from "../Pages/Login&register/Forgetpassword";
 
 const routesConfig = [
   { path: ROUTES.HOME, Component: Homepage },
@@ -21,6 +22,7 @@ const routesConfig = [
   { path: ROUTES.Transaction_pg, Component: Transaction },
   { path: ROUTES.Userprofile_pg, Component: Userprofile },
   { path: ROUTES.Reports_pg, Component: Reports },
+  { path: ROUTES.Forget_pass, Component: Forgetpassword },
 ];
 
 export default routesConfig;

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Buttons from "../../components/Buttons";
 import { expensebg2 } from "../../assets/images";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import ROUTES from "../../routes/routes";
 import axios from "axios";
 import DASH_ROUTES from "../../routes/dashboardroutes";
@@ -74,7 +74,13 @@ const Loginpg = () => {
                       className="mt-5 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none cursor-pointer"
                       buttontext={"Login"}
                     />
-                    <p className="mt-6 text-xs text-gray-600 text-center">
+                    <NavLink
+                      to={ROUTES.Forget_pass}
+                      className="cursor-pointer flex flex-col mt-2 text-right text-sm text-blue-700 hover:text-blue-900"
+                    >
+                      Forget password?
+                    </NavLink>
+                    <p className="mt-4 text-xs text-gray-600 text-center">
                       I agree to abide by templatana's
                       <a
                         href="#"
@@ -93,7 +99,7 @@ const Loginpg = () => {
                     <p className="mt-6 text-xs text-gray-600 text-center">
                       Don't have an account?{" "}
                       <span className="hover:text-purple-500 text-purple-400 cursor-pointer">
-                        <Link to={ROUTES.Register_Page}>Register here</Link>
+                        <Link to={ROUTES.Register_page}>Register here</Link>
                       </span>
                     </p>
                   </form>

@@ -5,6 +5,7 @@ const ROUTES = {
   CONTACT_FORM: "/contact-form",
   Login_Page: "/Loginpg",
   Register_page: "/Registerpg",
+  Forget_pass: "/Forgetpassword",
   DashBoard: "/dashboard",
 };
 
