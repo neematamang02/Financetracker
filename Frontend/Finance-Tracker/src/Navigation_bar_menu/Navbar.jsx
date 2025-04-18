@@ -1,124 +1,201 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import Buttons from "../components/Buttons";
-import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
-import ROUTES from "../routes/routes";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import ROUTES from "@/routes/routes";
+import { useNavigate } from "react-router-dom";
+const navLinks = [
+  { label: "Home", href: "#" },
+  { label: "Features", href: "#" },
+  { label: "FAQ", href: "#" },
+  { label: "Process", href: "#" },
+];
 
 const Navbar = () => {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-    document.body.style.overflow = menuOpen ? "auto" : "hidden";
+  const [isOpen, setIsOpen] = useState(false);
+
+  const loginNavigate = () => {
+    navigate(ROUTES.Login_Page);
   };
-
+  const signupNavigate = () => {
+    navigate(ROUTES.Register_page);
+  };
   return (
-    <nav className="flex justify-between items-center py-8 px-10 bg-white shadow-md sticky top-0 z-50">
-      {/* Logo */}
-      <div className="logo">
-        <Link to={ROUTES.HOME} className="font-bold">
-          Logo
-        </Link>
-      </div>
-
-      {/* Navigation Links for Desktop */}
-      <ul className="hidden md:flex flex-row gap-10">
-        <li>
-          <Link to={ROUTES.HOME} className="text-primary">
-            Home
-          </Link>
-        </li>
-        <li>
-          <Link to={ROUTES.ABOUT_ME} className="hover:text-primary">
-            About Us
-          </Link>
-        </li>
-        <li>
-          <Link to={ROUTES.TESTIMONIALS} className="hover:text-primary">
-            Testimonials
-          </Link>
-        </li>
-      </ul>
-
-      {/* Contact Me Button for Desktop */}
-      <div className="hidden md:flex gap-2">
-        <Buttons
-          buttontext="Login"
-          className="hover:bg-gray-400 hover:text-black text-primary py-2 px-4 rounded border-2 border-primary cursor-pointer"
-          navigateto={ROUTES.Login_Page}
-        />
-
-        <Buttons
-          buttontext="Register"
-          className="hover:bg-gray-400 hover:text-black py-2 px-4 rounded border-2 border-primary cursor-pointer"
-          navigateto={ROUTES.Register_page}
-        />
-      </div>
-
-      {/* Mobile Menu Button */}
-      <div className="md:hidden z-50" onClick={toggleMenu}>
-        {menuOpen ? <AiOutlineClose size={24} /> : <AiOutlineMenu size={24} />}
-      </div>
-
-      {/* Mobile Menu Overlay */}
-      <div
-        className={`fixed inset-0 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ${
-          menuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
-        onClick={toggleMenu}
-      ></div>
-
-      {/* Mobile Menu */}
-      <div
-        className={`fixed top-0 right-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
-          menuOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
-        <ul className="flex flex-col gap-6 p-8 mt-16">
-          <li>
-            <Link
-              to={ROUTES.HOME}
-              className="text-primary"
-              onClick={toggleMenu}
+    <section className="py-4 px-4 md:px-0 lg:py-6 fixed top-0 left-0 right-0 z-50">
+      <div className="container max-w-4xl md:mx-auto">
+        <div className="grid grid-cols-2 backdrop-filter md:backdrop-blur-md text-black lg:grid-cols-3 bg-white/70 rounded-xl p-2 px-4 md:pr-2 items-center">
+          {/* Logo */}
+          <div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-9 md:h-11 w-auto ml-2"
             >
-              Home
-            </Link>
-          </li>
-          <li>
-            <Link
-              to={ROUTES.ABOUT_ME}
-              className="hover:text-primary"
-              onClick={toggleMenu}
-            >
-              About Us
-            </Link>
-          </li>
-          <li>
-            <Link
-              to={ROUTES.TESTIMONIALS}
-              className="hover:text-primary"
-              onClick={toggleMenu}
-            >
-              Testimonials
-            </Link>
-          </li>
-          <li className="flex flex-col gap-2">
-            <Buttons
-              buttontext="Login"
-              className="hover:bg-primary hover:text-white text-primary py-2 px-4 rounded border-2 border-primary w-full"
-              navigateto={ROUTES.Login_Page}
-              onClick={toggleMenu}
-            />
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+              <path d="M4 16h4v-7l4 4l4 -4v7h4" />
+            </svg>
+          </div>
 
-            <Buttons
-              buttontext="Register"
-              className="hover:bg-primary hover:text-white text-primary py-2 px-4 rounded border-2 border-primary"
-              navigateto={ROUTES.Register_page}
-            />
-          </li>
-        </ul>
+          {/* Desktop Nav Links */}
+          <div className="hidden lg:flex justify-center items-center">
+            <nav className="flex gap-6 font-medium">
+              {navLinks.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  className="hover:underline"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </nav>
+          </div>
+
+          {/* Actions */}
+          <div className="flex justify-end items-center gap-4">
+            {/* Menu Toggle (Mobile) */}
+            <button
+              className="md:hidden hover:bg-zinc-700 p-2 rounded-full duration-400 ease-in-out"
+              aria-label="Open menu"
+              onClick={() => setIsOpen(true)}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="icon-tabler icon-tabler-menu-4"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M7 6h10" />
+                <path d="M4 12h16" />
+                <path d="M7 18h10" />
+              </svg>
+            </button>
+
+            {/* Desktop Buttons */}
+            <Button
+              variant="ghost"
+              className="hidden md:inline-flex cursor-pointer"
+              onClick={loginNavigate}
+            >
+              Log In
+            </Button>
+            <Button
+              className="hidden md:inline-flex cursor-pointer"
+              onClick={signupNavigate}
+            >
+              Sign Up
+            </Button>
+          </div>
+
+          {/* Mobile Menu Drawer */}
+          <AnimatePresence>
+            {isOpen && (
+              <>
+                {/* Backdrop */}
+                <motion.div
+                  className="fixed inset-0 bg-black/30 backdrop-filter backdrop-blur-lg z-40"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  onClick={() => setIsOpen(false)}
+                />
+
+                {/* Drawer Panel */}
+                <motion.div
+                  className="fixed top-15 right-2 rounded-xl h-[60%] w-3/4 max-w-xs bg-gray-100/60 backdrop-filter backdrop-blur-sm text-black z-50 flex flex-col p-6 shadow-lg"
+                  initial={{ x: "100%" }}
+                  animate={{ x: 0 }}
+                  exit={{ x: "100%" }}
+                  transition={{
+                    type: "tween",
+                    duration: 0.3,
+                    delayChildren: 0.2,
+                  }}
+                >
+                  {/* Close Button */}
+                  <div className="flex justify-end">
+                    <button
+                      aria-label="Close menu"
+                      onClick={() => setIsOpen(false)}
+                      className="hover:bg-zinc-200 p-1 rounded-full duration-200 ease-in-out"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="icon-tabler icon-tabler-x"
+                      >
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M18 6l-12 12" />
+                        <path d="M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  {/* Nav Links & Buttons */}
+                  <nav className="flex flex-col gap-4 mt-8 font-medium">
+                    {navLinks.map((link) => (
+                      <a
+                        key={link.label}
+                        href={link.href}
+                        className="py-2 hover:underline"
+                      >
+                        {link.label}
+                      </a>
+                    ))}
+                  </nav>
+
+                  <div className="mt-auto flex flex-col gap-3">
+                    <Button
+                      variant="ghost"
+                      className="cursor-pointer"
+                      onClick={() => {
+                        setIsOpen(false);
+                        loginNavigate();
+                      }}
+                    >
+                      Log In
+                    </Button>
+                    <Button
+                      className="cursor-pointer"
+                      onClick={() => {
+                        setIsOpen(false);
+                        signupNavigate();
+                      }}
+                    >
+                      Sign Up
+                    </Button>
+                  </div>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
-    </nav>
+    </section>
   );
 };
 
