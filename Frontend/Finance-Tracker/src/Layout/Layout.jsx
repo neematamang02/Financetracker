@@ -6,12 +6,12 @@ import DASH_ROUTES from "../routes/dashboardroutes";
 
 const Layout = ({ children }) => {
   const location = useLocation();
-  const hideNabbar = location.pathname.startsWith(DASH_ROUTES.DashBoard);
+  const hideNavbar = location.pathname.startsWith(DASH_ROUTES.DashBoard);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {!hideNabbar && <Navbar />}
-      <main className="flex-grow">{children}</main>
+    <div className="min-h-screen w-full bg-gray-100">
+      {!hideNavbar && <Navbar />}
+      <main className="flex-grow pt-24">{children}</main>
       <Footer />
     </div>
   );

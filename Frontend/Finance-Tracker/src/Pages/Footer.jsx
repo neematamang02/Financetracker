@@ -5,8 +5,8 @@ import { Facebook, Instagram, Linkedin } from "../assets/logo";
 
 const Footer = () => {
   return (
-    <footer class="flex flex-col space-y-10 justify-center m-10">
-      <nav class="flex justify-center flex-wrap gap-6 text-gray-500 font-medium list-none">
+    <footer class="min-h-64 bg-white justify-center flex flex-col items-center space-y-8 ">
+      <nav class="flex flex-row list-none gap-10">
         <li>
           <Link to={ROUTES.HOME} className="hover:text-gray-900">
             Home
