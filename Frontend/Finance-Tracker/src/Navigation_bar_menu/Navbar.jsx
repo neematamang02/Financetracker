@@ -1,125 +1,100 @@
+// src/components/Navbar.jsx
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import ROUTES from "@/routes/routes";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+
 const navLinks = [
-  { label: "Home", href: "#" },
-  { label: "Features", href: "#" },
-  { label: "FAQ", href: "#" },
-  { label: "Process", href: "#" },
+  { label: "Home", id: "home" },
+  { label: "Features", id: "features" },
+  { label: "FAQ", id: "faq" },
+  { label: "Process", id: "process" },
 ];
 
 const Navbar = () => {
   const navigate = useNavigate();
-
+  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
-  const loginNavigate = () => {
-    navigate(ROUTES.Login_Page);
+  // scroll to a section (with nice smooth behavior)
+  const scrollToSection = (id) => {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
-  const signupNavigate = () => {
-    navigate(ROUTES.Register_page);
+
+  // handles nav clicks
+  const onNavClick = (id) => {
+    setIsOpen(false);
+    if (location.pathname !== ROUTES.HOME) {
+      // go to “/” with a bit of state so Homepage can pick it up
+      navigate(ROUTES.HOME, { state: { scrollTo: id } });
+    } else {
+      scrollToSection(id);
+    }
   };
+
+  const loginNavigate = () => navigate(ROUTES.Login_Page);
+  const signupNavigate = () => navigate(ROUTES.Register_page);
+
   return (
     <section className="py-4 px-4 md:px-0 lg:py-6 fixed top-0 left-0 right-0 z-50">
       <div className="container max-w-4xl md:mx-auto">
         <div className="grid grid-cols-2 backdrop-filter md:backdrop-blur-md text-black lg:grid-cols-3 bg-white/70 rounded-xl p-2 px-4 md:pr-2 items-center">
           {/* Logo */}
           <div>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-9 md:h-11 w-auto ml-2"
-            >
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
-              <path d="M4 16h4v-7l4 4l4 -4v7h4" />
-            </svg>
+            <h1>LOGO</h1>
           </div>
 
           {/* Desktop Nav Links */}
           <div className="hidden lg:flex justify-center items-center">
             <nav className="flex gap-6 font-medium">
-              {navLinks.map((link) => (
-                <a
-                  key={link.label}
-                  href={link.href}
+              {navLinks.map(({ label, id }) => (
+                <button
+                  key={id}
+                  onClick={() => onNavClick(id)}
                   className="hover:underline"
                 >
-                  {link.label}
-                </a>
+                  {label}
+                </button>
               ))}
             </nav>
           </div>
 
           {/* Actions */}
           <div className="flex justify-end items-center gap-4">
-            {/* Menu Toggle (Mobile) */}
             <button
-              className="md:hidden hover:bg-zinc-700 p-2 rounded-full duration-400 ease-in-out"
-              aria-label="Open menu"
+              className="md:hidden hover:bg-zinc-700 p-2 rounded-full transition"
               onClick={() => setIsOpen(true)}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="icon-tabler icon-tabler-menu-4"
-              >
-                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                <path d="M7 6h10" />
-                <path d="M4 12h16" />
-                <path d="M7 18h10" />
-              </svg>
+              {/* menu icon */}
             </button>
 
-            {/* Desktop Buttons */}
             <Button
               variant="ghost"
-              className="hidden md:inline-flex cursor-pointer"
+              className="hidden md:inline-flex"
               onClick={loginNavigate}
             >
               Log In
             </Button>
-            <Button
-              className="hidden md:inline-flex cursor-pointer"
-              onClick={signupNavigate}
-            >
+            <Button className="hidden md:inline-flex" onClick={signupNavigate}>
               Sign Up
             </Button>
           </div>
 
-          {/* Mobile Menu Drawer */}
+          {/* Mobile Drawer */}
           <AnimatePresence>
             {isOpen && (
               <>
-                {/* Backdrop */}
                 <motion.div
-                  className="fixed inset-0 bg-black/30 backdrop-filter backdrop-blur-lg z-40"
+                  className="fixed inset-0 bg-black/30 backdrop-blur-lg z-40"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
                   onClick={() => setIsOpen(false)}
                 />
-
-                {/* Drawer Panel */}
                 <motion.div
-                  className="fixed top-15 right-2 rounded-xl h-[60%] w-3/4 max-w-xs bg-gray-100/60 backdrop-filter backdrop-blur-sm text-black z-50 flex flex-col p-6 shadow-lg"
+                  className="fixed top-16 right-2 w-3/4 max-w-xs bg-gray-100/60 backdrop-blur-sm z-50 flex flex-col p-6 rounded-xl shadow-lg"
                   initial={{ x: "100%" }}
                   animate={{ x: 0 }}
                   exit={{ x: "100%" }}
@@ -129,49 +104,29 @@ const Navbar = () => {
                     delayChildren: 0.2,
                   }}
                 >
-                  {/* Close Button */}
-                  <div className="flex justify-end">
-                    <button
-                      aria-label="Close menu"
-                      onClick={() => setIsOpen(false)}
-                      className="hover:bg-zinc-200 p-1 rounded-full duration-200 ease-in-out"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="icon-tabler icon-tabler-x"
-                      >
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                        <path d="M18 6l-12 12" />
-                        <path d="M6 6l12 12" />
-                      </svg>
-                    </button>
-                  </div>
+                  <button
+                    aria-label="Close menu"
+                    onClick={() => setIsOpen(false)}
+                    className="self-end p-1 rounded-full hover:bg-zinc-200 transition"
+                  >
+                    {/* x icon */}
+                  </button>
 
-                  {/* Nav Links & Buttons */}
-                  <nav className="flex flex-col gap-4 mt-8 font-medium">
-                    {navLinks.map((link) => (
-                      <a
-                        key={link.label}
-                        href={link.href}
-                        className="py-2 hover:underline"
+                  <nav className="flex flex-col gap-4 mt-6 font-medium">
+                    {navLinks.map(({ label, id }) => (
+                      <button
+                        key={id}
+                        onClick={() => onNavClick(id)}
+                        className="py-2 hover:underline text-left"
                       >
-                        {link.label}
-                      </a>
+                        {label}
+                      </button>
                     ))}
                   </nav>
 
                   <div className="mt-auto flex flex-col gap-3">
                     <Button
                       variant="ghost"
-                      className="cursor-pointer"
                       onClick={() => {
                         setIsOpen(false);
                         loginNavigate();
@@ -180,7 +135,6 @@ const Navbar = () => {
                       Log In
                     </Button>
                     <Button
-                      className="cursor-pointer"
                       onClick={() => {
                         setIsOpen(false);
                         signupNavigate();
