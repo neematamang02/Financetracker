@@ -11,7 +11,7 @@ const Layout = ({ children }) => {
   return (
     <div className="min-h-screen w-full bg-gray-100">
       {!hideNavbar && <Navbar />}
-      <main className="flex-grow pt-24">{children}</main>
+      <main className="flex-grow">{children}</main>
       <Footer />
     </div>
   );

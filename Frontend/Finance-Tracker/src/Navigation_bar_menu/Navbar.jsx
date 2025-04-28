@@ -42,9 +42,22 @@ const Navbar = () => {
       <div className="container max-w-4xl md:mx-auto">
         <div className="grid grid-cols-2 backdrop-filter md:backdrop-blur-md text-black lg:grid-cols-3 bg-white/70 rounded-xl p-2 px-4 md:pr-2 items-center">
           {/* Logo */}
-          <div>
-            <h1>LOGO</h1>
-          </div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="30"
+            height="30"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#0000FF"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            class="icon icon-tabler icons-tabler-outline icon-tabler-coin-monero"
+          >
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+            <path d="M4 16h4v-7l4 4l4 -4v7h4" />
+          </svg>
 
           {/* Desktop Nav Links */}
           <div className="hidden lg:flex justify-center items-center">
@@ -53,7 +66,7 @@ const Navbar = () => {
                 <button
                   key={id}
                   onClick={() => onNavClick(id)}
-                  className="hover:underline"
+                  className="hover:underline cursor-pointer"
                 >
                   {label}
                 </button>
@@ -64,20 +77,41 @@ const Navbar = () => {
           {/* Actions */}
           <div className="flex justify-end items-center gap-4">
             <button
-              className="md:hidden hover:bg-zinc-700 p-2 rounded-full transition"
+              className="md:hidden hover:bg-zinc-300 p-2 rounded-full transition cursor-pointer duration-300 ease-in-out"
               onClick={() => setIsOpen(true)}
             >
               {/* menu icon */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                class="icon icon-tabler icons-tabler-outline icon-tabler-menu-4"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M7 6h10" />
+                <path d="M4 12h16" />
+                <path d="M7 12h13" />
+                <path d="M7 18h10" />
+              </svg>
             </button>
 
             <Button
               variant="ghost"
-              className="hidden md:inline-flex"
+              className="hidden md:inline-flex cursor-pointer"
               onClick={loginNavigate}
             >
               Log In
             </Button>
-            <Button className="hidden md:inline-flex" onClick={signupNavigate}>
+            <Button
+              className="hidden md:inline-flex cursor-pointer"
+              onClick={signupNavigate}
+            >
               Sign Up
             </Button>
           </div>
@@ -107,9 +141,25 @@ const Navbar = () => {
                   <button
                     aria-label="Close menu"
                     onClick={() => setIsOpen(false)}
-                    className="self-end p-1 rounded-full hover:bg-zinc-200 transition"
+                    className="self-end p-1 rounded-full transition cursor-pointer duration-300 ease-in-out"
                   >
                     {/* x icon */}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      class="icon icon-tabler icons-tabler-outline icon-tabler-x hover:rotate-90 duration-300 ease-in-out"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path d="M18 6l-12 12" />
+                      <path d="M6 6l12 12" />
+                    </svg>
                   </button>
 
                   <nav className="flex flex-col gap-4 mt-6 font-medium">

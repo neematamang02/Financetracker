@@ -1,5 +1,6 @@
 import React from "react";
 import { DollarSign, Tag, Table, BarChart2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 const featureList = [
   {
@@ -32,9 +33,11 @@ const Features = () => {
   return (
     <section id="features" className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12">
-          Key Features
-        </h2>
+        <div className="max-w-2xl mx-auto text-center mb-16">
+          <Badge className="mb-4" variant="outline">
+            Key Features
+          </Badge>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {featureList.map((feature) => (
             <div

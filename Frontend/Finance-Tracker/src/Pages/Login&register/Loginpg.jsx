@@ -42,7 +42,7 @@ const Loginpg = () => {
   return (
     <>
       <Toaster position="top-center" reverseOrder={false} />
-      <div className="min-h-screen text-gray-900 flex justify-center">
+      <div className="min-h-screen text-gray-900 pt-20 flex justify-center">
         <div className="max-w-screen-xl m-0 sm:m-10 bg-white shadow sm:rounded-lg flex justify-center flex-1">
           <div className="lg:w-1/2 xl:w-5/12 p-6 sm:p-12">
             <div className="text-center">

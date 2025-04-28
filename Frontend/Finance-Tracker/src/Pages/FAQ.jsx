@@ -1,5 +1,11 @@
-import React, { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import React from "react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
 
 const faqList = [
   {
@@ -25,44 +31,22 @@ const faqList = [
 ];
 
 const FAQ = () => {
-  const [openIndex, setOpenIndex] = useState(null);
-  const toggle = (idx) => {
-    setOpenIndex(openIndex === idx ? null : idx);
-  };
-
   return (
     <section id="faq" className="py-20 bg-white">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12">
-          Frequently Asked Questions
-        </h2>
-        <div className="max-w-2xl mx-auto space-y-4">
-          {faqList.map((item, idx) => (
-            <div
-              key={idx}
-              className="border border-gray-200 rounded-2xl overflow-hidden"
-            >
-              <button
-                onClick={() => toggle(idx)}
-                className="w-full flex justify-between items-center p-4 bg-gray-50 hover:bg-gray-100 focus:outline-none"
-              >
-                <span className="font-medium text-left">{item.question}</span>
-                <ChevronDown
-                  className={`h-5 w-5 transform transition-transform duration-200 ${
-                    openIndex === idx ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-              <div
-                className={`px-4 pb-4 text-gray-600 overflow-hidden transition-max-height duration-300 ease-in-out ${
-                  openIndex === idx ? "max-h-96 pt-2" : "max-h-0"
-                }`}
-              >
-                {item.answer}
-              </div>
-            </div>
-          ))}
+        <div className="max-w-2xl mx-auto text-center mb-16">
+          <Badge className="mb-4" variant="outline">
+            Support
+          </Badge>
         </div>
+        <Accordion type="single" collapsible className="px-10">
+          {faqList.map((faq, index) => (
+            <AccordionItem key={index} value={`faq-${index}`}>
+              <AccordionTrigger>{faq.question}</AccordionTrigger>
+              <AccordionContent>{faq.answer}</AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
       </div>
     </section>
   );
