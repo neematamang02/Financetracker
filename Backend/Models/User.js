@@ -6,6 +6,7 @@ const UserSchema = new mongoose.Schema(
     password: { type: String, required: true },
     monthlyIncome: { type: Number, default: 0 },
     total_expense: { type: Number, default: 0 },
+    profileImage: { type: String, default: "" },
   },
   { timestamps: true }
 );

@@ -14,10 +14,12 @@ import DASH_ROUTES from "../routes/dashboardroutes";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import Useuser from "../components/Useuser";
+import { useUserProfile } from "@/components/Helper";
 
 const Dashboardlayout = () => {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { profileImage } = useUserProfile();
   const { user, loading, error } = Useuser();
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error loading user data: {error.message}</p>;
@@ -61,9 +63,12 @@ const Dashboardlayout = () => {
         <aside className="hidden md:block w-64 p-4 bg-gray-800 text-white h-screen">
           <div className="userprofile flex gap-5 p-4">
             <img
-              src="https://static.everypixel.com/ep-pixabay/0329/8099/0858/84037/3298099085884037069-head.png"
+              src={
+                profileImage ||
+                "https://dummycomp.shopespot.com/uploads/partner/254/promo_images/2024/05/dummy-user.png"
+              }
               alt="profile"
-              className="rounded-full h-12 w-12"
+              className="rounded-full h-12 w-12 object-cover"
             />
             <p className="mt-4">Mr/Mrs. {user?.name || "User"}</p>
           </div>
