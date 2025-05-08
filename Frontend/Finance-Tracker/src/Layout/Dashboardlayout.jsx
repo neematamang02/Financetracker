@@ -15,12 +15,24 @@ import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import Useuser from "../components/Useuser";
 import { useUserProfile } from "@/components/Helper";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 
 const Dashboardlayout = () => {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const { profileImage } = useUserProfile();
   const { user, loading, error } = Useuser();
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error loading user data: {error.message}</p>;
 
@@ -35,19 +47,47 @@ const Dashboardlayout = () => {
     } catch (error) {
       console.error("Logout error:", error);
     }
+
     toast.success("Logout successfully");
     localStorage.removeItem("token");
     setTimeout(() => {
       navigate(ROUTES.Login_Page);
-    }, 1000);
+    }, 500);
   };
+
+  const LogoutDialog = () => (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <button className="flex items-center gap-3 hover:text-primary focus:outline-none cursor-pointer">
+          <BiLogOut className="mt-1" />
+          Logout
+        </button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogDescription>
+            You will be logged out. This action cannot be undone.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel className="cursor-pointer">
+            Cancel
+          </AlertDialogCancel>
+          <AlertDialogAction onClick={handleLogout} className="cursor-pointer">
+            Continue
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
 
   return (
     <>
       <Toaster position="top-center" reverseOrder={false} />
-      {/* Top Navigation Bar for Mobile */}
+
+      {/* Top Nav (Mobile) */}
       <nav className="flex justify-between items-center py-4 px-6 bg-gray-800 text-white md:hidden">
-        {/* Menu Icon on the Left */}
         <button onClick={toggleMenu} className="focus:outline-none">
           {menuOpen ? (
             <AiOutlineClose size={24} />
@@ -117,20 +157,14 @@ const Dashboardlayout = () => {
                   Settings
                 </Link>
               </li>
-              <li className="flex gap-3 p-4 hover:bg-gray-700 transition-colors">
-                <BiLogOut className="mt-1" />
-                <button
-                  onClick={handleLogout}
-                  className="hover:text-primary focus:outline-none cursor-pointer"
-                >
-                  Logout
-                </button>
+              <li className="flex p-4 hover:bg-gray-700 transition-colors">
+                {LogoutDialog()}
               </li>
             </ul>
           </nav>
         </aside>
 
-        {/* Mobile Sidebar (Left Side) */}
+        {/* Mobile Sidebar */}
         <div
           className={`fixed top-0 left-0 h-full w-64 bg-gray-800 text-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 md:hidden ${
             menuOpen ? "translate-x-0" : "-translate-x-full"
@@ -207,20 +241,14 @@ const Dashboardlayout = () => {
                   Settings
                 </Link>
               </li>
-              <li className="flex gap-3 p-4 hover:bg-gray-700 transition-colors">
-                <BiLogOut className="mt-1" />
-                <button
-                  onClick={handleLogout}
-                  className="hover:text-primary focus:outline-none cursor-pointer"
-                >
-                  Logout
-                </button>
+              <li className="flex p-4 hover:bg-gray-700 transition-color">
+                {LogoutDialog()}
               </li>
             </ul>
           </nav>
         </div>
 
-        {/* Mobile Overlay with Reduced Opacity */}
+        {/* Overlay when mobile menu is open */}
         {menuOpen && (
           <div
             className="fixed inset-0 backdrop-blur-sm md:hidden"

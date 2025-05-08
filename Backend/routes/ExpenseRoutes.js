@@ -1,49 +1,71 @@
+// // backend/routes/transactionRoutes.js
+// import express from "express";
+// import Expense from "../Models/Expense.js";
+// import authMiddleware from "../middleware/authMiddleware.js";
+// import { parseAndCategorize } from "../utils/parseTransactions.js";
+
+// const router = express.Router();
+
+// // POST /api/transactions/parse
+// // Parses free‑form text, categorizes each “<amount> on <keyword>”,
+// // saves them to MongoDB, and returns the saved records.
+// router.post("/parse", authMiddleware, async (req, res) => {
+//   try {
+//     const user_id = req.user.id;
+//     const { text } = req.body;
+//     if (!text) return res.status(400).json({ message: "No text provided" });
+
+//     // 1. Parse & categorize
+//     const parsed = parseAndCategorize(text);
+
+//     // 2. Attach user_id and save
+//     const docs = parsed.map((tx) => ({ ...tx, user_id }));
+//     const saved = await Expense.insertMany(docs);
+
+//     res.status(201).json(saved);
+//   } catch (err) {
+//     console.error("Error in /transactions/parse:", err);
+//     res.status(500).json({ message: "Failed to parse transactions" });
+//   }
+// });
+
+// export default router;
+// backend/routes/expenseRoutes.js
 import express from "express";
 import Expense from "../Models/Expense.js";
 import authMiddleware from "../middleware/authMiddleware.js";
+import { parseAndCategorize } from "../utils/parseTransactions.js";
 
 const router = express.Router();
 
-router.post("/add", authMiddleware, async (req, res) => {
-  const { user_id, amount, category, store, date } = req.body;
-  try {
-    const expense = new Expense({ user_id, amount, category, store, date });
-    await expense.save();
-    res.json(expense);
-  } catch (error) {
-    res.status(500).json({ message: "Error adding expense" });
-  }
-});
-
+// GET /api/expenses/user/:user_id
 router.get("/user/:user_id", authMiddleware, async (req, res) => {
   try {
     const expenses = await Expense.find({ user_id: req.params.user_id }).sort({
       date: -1,
     });
     res.json(expenses);
-  } catch (error) {
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Error fetching expenses" });
   }
 });
 
-router.get("/filter", authMiddleware, async (req, res) => {
-  const { user_id, startDate, endDate, category, store, minAmount, maxAmount } =
-    req.query;
-
-  let query = { user_id };
-
-  if (startDate && endDate)
-    query.date = { $gte: new Date(startDate), $lte: new Date(endDate) };
-  if (category) query.category = category;
-  if (store) query.store = store;
-  if (minAmount && maxAmount)
-    query.amount = { $gte: parseFloat(minAmount), $lte: parseFloat(maxAmount) };
-
+// POST /api/expenses/parse
+router.post("/parse", authMiddleware, async (req, res) => {
   try {
-    const expenses = await Expense.find(query).sort({ date: -1 });
-    res.json(expenses);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching filtered expenses" });
+    const user_id = req.user.id;
+    const { text } = req.body;
+    if (!text) return res.status(400).json({ message: "No text provided" });
+
+    const parsed = parseAndCategorize(text);
+    const docs = parsed.map((tx) => ({ ...tx, user_id }));
+    const saved = await Expense.insertMany(docs);
+
+    res.status(201).json(saved);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to parse transactions" });
   }
 });
 
