@@ -15,7 +15,7 @@ export const useUserProfile = () => {
       try {
         const token = localStorage.getItem("token");
         const { data } = await axios.get(`${API_BASE_URL}/api/auth/me`, {
-          headers: { Authorization: token },
+          headers: { Authorization: `Bearer ${token}` },
         });
         setName(data.name);
         setEmail(data.email);

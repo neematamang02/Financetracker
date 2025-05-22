@@ -24,7 +24,7 @@ const UserProfile = () => {
         updateData.newPassword = newPassword;
       }
       await axios.put("http://localhost:5000/api/auth/update", updateData, {
-        headers: { Authorization: token },
+        headers: { Authorization: `Bearer ${token}` },
       });
       alert("Profile updated successfully");
     } catch (error) {
@@ -48,7 +48,7 @@ const UserProfile = () => {
         formData,
         {
           headers: {
-            Authorization: token, // Ensure this matches your server’s expected format (e.g., "Bearer " + token if required)
+            Authorization: `Bearer ${token}`, // Ensure this matches your server’s expected format (e.g., "Bearer " + token if required)
             "Content-Type": "multipart/form-data",
           },
         }

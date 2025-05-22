@@ -6,10 +6,13 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import authRoutes from "./routes/authRoutes.js";
-import budgetRoutes from "./routes/BudgetRoutes.js";
 import exportRoutes from "./routes/ExportRoutes.js";
 import receiptRoutes from "./routes/ReceiptRoutes.js";
-import aiRoutes from "./routes/AiRoutes.js";
+import goalsRouter from "./routes/Goals.js";
+import categoryRouter from "./routes/categoryRoutes.js";
+import budgetRouter from "./routes/BudgetRoutes.js";
+import expenseRouter from "./routes/ExpenseRoutes.js";
+import reportRouter from "./routes/ExportRoutes.js";
 import router from "./routes/ExpenseRoutes.js";
 
 dotenv.config();
@@ -31,10 +34,12 @@ mongoose
 // Mount routers
 app.use("/api/auth", authRoutes);
 app.use("/api/expenses", router);
-app.use("/api/budget", budgetRoutes);
+app.use("/api/categories", categoryRouter);
+app.use("/api/budget", budgetRouter);
+app.use("/api/reports", reportRouter);
 app.use("/api/export", exportRoutes);
 app.use("/api/receipt", receiptRoutes);
-app.use("/api/ai", aiRoutes);
+app.use("/api/goals", goalsRouter);
 
 // Static uploads
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));

@@ -4,6 +4,8 @@ const DASH_ROUTES = {
   Transaction_pg: "/dashboard/transaction",
   Userprofile_pg: "/dashboard/userprofile",
   Report_pg: "/dashboard/reports",
+  Savinggoal_pg: "/dashboard/SavingGoals",
+  Budgetmanage_pg: "/dashboard/BudgetManage",
 };
 
 export default DASH_ROUTES;

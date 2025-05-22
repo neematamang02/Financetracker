@@ -13,7 +13,7 @@ import ROUTES from "../routes/routes";
 import DASH_ROUTES from "../routes/dashboardroutes";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
-import Useuser from "../components/Useuser";
+
 import { useUserProfile } from "@/components/Helper";
 import {
   AlertDialog,
@@ -26,6 +26,7 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
+import Useuser from "@/hooks/use-user";
 
 const Dashboardlayout = () => {
   const navigate = useNavigate();
@@ -130,6 +131,24 @@ const Dashboardlayout = () => {
                   className="hover:text-primary"
                 >
                   Transactions
+                </Link>
+              </li>
+              <li className="flex gap-3 p-4 hover:bg-gray-700 transition-colors">
+                <FaMoneyBillTransfer className="mt-1" />
+                <Link
+                  to={DASH_ROUTES.Savinggoal_pg}
+                  className="hover:text-primary"
+                >
+                  Saving goals
+                </Link>
+              </li>
+              <li className="flex gap-3 p-4 hover:bg-gray-700 transition-colors">
+                <FaMoneyBillTransfer className="mt-1" />
+                <Link
+                  to={DASH_ROUTES.Budgetmanage_pg}
+                  className="hover:text-primary"
+                >
+                  Budget Manage
                 </Link>
               </li>
               <li className="flex gap-3 p-4 hover:bg-gray-700 transition-colors">

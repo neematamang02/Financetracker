@@ -16,7 +16,7 @@ const Useuser = () => {
         }
         const config = {
           headers: {
-            Authorization: token,
+            Authorization: `Bearer ${token}`,
           },
         };
         const response = await axios.get(
