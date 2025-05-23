@@ -7,6 +7,8 @@ import {
   CgProfile,
   IoMdSettings,
   BiLogOut,
+  MdSavings,
+  MdManageAccounts,
 } from "../assets/logo/index";
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
 import ROUTES from "../routes/routes";
@@ -134,7 +136,7 @@ const Dashboardlayout = () => {
                 </Link>
               </li>
               <li className="flex gap-3 p-4 hover:bg-gray-700 transition-colors">
-                <FaMoneyBillTransfer className="mt-1" />
+                <MdSavings className="mt-1" />
                 <Link
                   to={DASH_ROUTES.Savinggoal_pg}
                   className="hover:text-primary"
@@ -143,7 +145,7 @@ const Dashboardlayout = () => {
                 </Link>
               </li>
               <li className="flex gap-3 p-4 hover:bg-gray-700 transition-colors">
-                <FaMoneyBillTransfer className="mt-1" />
+                <MdManageAccounts className="mt-1" />
                 <Link
                   to={DASH_ROUTES.Budgetmanage_pg}
                   className="hover:text-primary"

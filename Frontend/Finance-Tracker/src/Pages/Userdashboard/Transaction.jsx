@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import axios from "axios";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
+import { toast } from "sonner";
+import { Plus, Trash, Calendar, FileText, Tag, PiggyBank } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
-  Form,
   FormField,
   FormItem,
   FormLabel,
@@ -11,27 +13,32 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { Plus, Trash } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import Useuser from "@/hooks/use-user";
+import { useCategories } from "@/hooks/use-categories";
 import AnimatedDropdown from "@/components/AnimatedDropdown";
 
-const EXPENSE_CATEGORIES = [
-  "Food",
-  "Transport",
-  "Shopping",
-  "Utilities",
-  "Health",
-  "Entertainment",
-];
+export default function Transaction() {
+  // Custom hooks for user and categories
+  const { user, loading: userLoading } = Useuser();
+  const { categories, loading: catLoading, addCategory } = useCategories();
 
-const Transaction = () => {
-  const [text, setText] = useState("");
+  // State management
   const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedIds, setSelectedIds] = useState([]);
   const [type, setType] = useState("expense");
+  const [cache, setCache] = useState({ expense: {}, income: {} });
 
-  const form = useForm({
+  // Form setup with react-hook-form
+  const methods = useForm({
     defaultValues: {
       type: "expense",
       category: "",
@@ -41,104 +48,90 @@ const Transaction = () => {
     },
   });
   const {
+    register,
+    unregister,
     control,
     handleSubmit,
     setValue,
-    resetField,
-    watch,
-    formState: { errors },
-  } = form;
+    reset,
+    getValues,
+  } = methods;
 
-  // Clear category when switching to income
-  useEffect(() => {
-    setValue("category", "");
-  }, [type, setValue]);
+  // Handle tab switching and form state preservation
+  const handleTabChange = (newType) => {
+    // Cache current form values for the old tab
+    setCache((c) => ({ ...c, [type]: getValues() }));
 
+    // If switching to income, remove category field registration
+    if (newType === "income") {
+      unregister("category");
+    }
+
+    // Determine values to restore for the new tab
+    const toRestore = cache[newType] || {
+      category: "",
+      store: "",
+      amount: "",
+      date: "",
+    };
+
+    // Reset form values, ensuring type field is updated
+    reset({ type: newType, ...toRestore });
+    setType(newType);
+    setValue("type", newType);
+  };
+
+  // Fetch transactions when user is available
   useEffect(() => {
+    if (!user) return;
+    setLoading(true);
     const token = localStorage.getItem("token");
-    if (!token) return;
-    const payload = JSON.parse(atob(token.split(".")[1]));
-    const userId = payload?.id;
-    if (!userId) return;
-
     axios
-      .get(`http://localhost:5000/api/expenses/user/${userId}`, {
+      .get(`/api/expenses/user/${user._id}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
-      .then((res) => setTransactions(res.data))
-      .catch((err) => console.error("Fetch error:", err));
-  }, []);
+      .then((res) => {
+        setTransactions(res.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setLoading(false);
+      });
+  }, [user]);
 
+  // Submit new transaction
   const onSubmit = async (data) => {
     const token = localStorage.getItem("token");
     const payload = {
       type: data.type,
       store: data.store,
-      amount: data.amount,
+      amount: Number(data.amount),
       date: data.date,
     };
+    // Only include category for expenses
     if (data.type === "expense") payload.category = data.category;
 
     try {
-      const { data: newTx } = await axios.post(
-        "http://localhost:5000/api/expenses",
-        payload,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setTransactions((prev) => [...prev, newTx]);
-      form.reset({
-        type: data.type,
-        category: "",
-        store: "",
-        amount: "",
-        date: "",
+      const res = await axios.post("/api/expenses", payload, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-      toast("Transaction has been successfully added!");
+      setTransactions((prev) => [...prev, res.data]);
+      toast.success("Transaction added successfully!");
+      reset({ type: data.type, category: "", store: "", amount: "", date: "" });
     } catch (err) {
-      console.error("Add failed:", err);
-      toast(err.response?.data?.message || "Failed to add transaction.");
+      console.error(err);
+      toast.error(err.response?.data?.message || "Failed to add transaction");
     }
   };
 
-  const handleParse = async (e) => {
-    e.preventDefault();
-    if (!text.trim()) return;
-    const token = localStorage.getItem("token");
-    try {
-      const { data: parsed } = await axios.post(
-        "http://localhost:5000/api/expenses/parse",
-        { text },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setTransactions(parsed);
-      setText("");
-    } catch (err) {
-      console.error("Auto-add failed:", err);
-      alert("Failed to parse transactions.");
-    }
-  };
-
-  const toggleSelect = (id) => {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-    );
-  };
-
-  const toggleSelectAll = () => {
-    setSelectedIds((prev) =>
-      prev.length === transactions.length
-        ? []
-        : transactions.map((tx) => tx._id)
-    );
-  };
-
+  // Delete selected transactions
   const deleteSelected = async () => {
-    if (!selectedIds.length) return;
     const token = localStorage.getItem("token");
     try {
       await Promise.all(
         selectedIds.map((id) =>
-          axios.delete(`http://localhost:5000/api/expenses/${id}`, {
+          axios.delete(`/api/expenses/${id}`, {
             headers: { Authorization: `Bearer ${token}` },
           })
         )
@@ -147,268 +140,448 @@ const Transaction = () => {
         prev.filter((tx) => !selectedIds.includes(tx._id))
       );
       setSelectedIds([]);
+      toast.success(
+        `${selectedIds.length} transaction(s) deleted successfully!`
+      );
     } catch (err) {
-      console.error("Delete failed:", err);
-      alert("Failed to delete selected transactions.");
+      console.error(err);
+      toast.error("Failed to delete transactions");
     }
   };
 
+  // Toggle individual transaction selection
+  const toggleSelect = (id) =>
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+
+  // Filter transactions based on current type
+  const filteredTransactions = useMemo(() => {
+    return transactions.filter((tx) => tx.type === type);
+  }, [transactions, type]);
+
+  // Toggle selection of all filtered transactions
+  const toggleAll = () => {
+    setSelectedIds((prev) => {
+      if (prev.length === filteredTransactions.length) {
+        return [];
+      } else {
+        return filteredTransactions.map((tx) => tx._id);
+      }
+    });
+  };
+
+  // Loading state
+  if (userLoading || catLoading)
+    return (
+      <div className="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto space-y-4 sm:space-y-6">
+        <Skeleton className="h-8 sm:h-10 w-[200px] sm:w-[250px] mx-auto rounded-lg" />
+        <Skeleton className="h-5 sm:h-6 w-[280px] sm:w-[350px] mx-auto rounded-lg" />
+        <Skeleton className="h-10 sm:h-12 w-[240px] sm:w-[300px] mx-auto rounded-lg mt-4 sm:mt-6" />
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-7 sm:h-8 w-[180px] sm:w-[200px] rounded-lg" />
+            <Skeleton className="h-4 w-[250px] sm:w-[300px] rounded-lg" />
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+              {Array(4)
+                .fill(0)
+                .map((_, i) => (
+                  <div key={i} className="space-y-2">
+                    <Skeleton className="h-5 w-[100px] rounded-lg" />
+                    <Skeleton className="h-10 w-full rounded-lg" />
+                  </div>
+                ))}
+            </div>
+            <div className="flex justify-center mt-4 sm:mt-6">
+              <Skeleton className="h-9 sm:h-10 w-[150px] sm:w-[180px] rounded-lg" />
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
+              <Skeleton className="h-6 w-[150px] rounded-lg" />
+              <Skeleton className="h-9 sm:h-10 w-[150px] rounded-lg" />
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-0">
+            <Skeleton className="h-[300px] sm:h-[400px] w-full rounded-lg" />
+          </CardContent>
+        </Card>
+      </div>
+    );
+
   return (
-    <div className="p-5 text-black">
-      <h1 className="text-3xl font-bold mb-6">Transactions</h1>
-
-      <div className="mb-6 flex gap-4">
-        {/* {["expense", "income"].map((val) => (
-          <label key={val} className="flex items-center gap-1">
-            <input
-              type="checkbox"
-              value={val}
-              checked={watch("type") === val}
-              onChange={() => {
-                setType(val);
-                setValue("type", val);
-              }}
-            />
-            {val.charAt(0).toUpperCase() + val.slice(1)}
-          </label>
-        ))} */}
-        <Tabs
-          defaultValue="expense"
-          value={type}
-          onValueChange={(val) => {
-            setType(val);
-            setValue("type", val);
-          }}
-          className="mb-6"
-        >
-          <TabsList className="bg-gray-100 p-1 rounded-sm space-x-2">
-            <TabsTrigger
-              value="expense"
-              className="
-        px-4 py-2 rounded-sm
-        transition-colors
-        hover:bg-gray-200
-        data-[state=active]:bg-blue-600
-        data-[state=active]:text-white cursor-pointer
-      "
-            >
-              Expense
-            </TabsTrigger>
-            <TabsTrigger
-              value="income"
-              className="
-        px-4 py-2 rounded-sm
-        transition-colors
-        hover:bg-gray-200
-        data-[state=active]:bg-green-600
-        data-[state=active]:text-white cursor-pointer
-      "
-            >
-              Income
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
+    <div className="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto space-y-4 sm:space-y-6">
+      <div className="text-center space-y-2">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+          Transaction Manager
+        </h1>
+        <p className="text-muted-foreground">
+          Track your expenses and income with ease
+        </p>
       </div>
 
-      <Form {...form}>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {/* {type === "expense" && (
-              <FormField
-                control={control}
-                name="category"
-                rules={{ required: "Category is required for expenses" }}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Category</FormLabel>
-                    <FormControl>
-                      <select {...field} className="w-full p-2 border rounded">
-                        <option value="" disabled>
-                          Select category
-                        </option>
-                        {EXPENSE_CATEGORIES.map((c) => (
-                          <option key={c} value={c}>
-                            {c}
-                          </option>
-                        ))}
-                      </select>
-                    </FormControl>
-                    <FormMessage>{errors.category?.message}</FormMessage>
-                  </FormItem>
-                )}
-              />
-            )} */}
-            {type === "expense" && (
-              <FormField
-                control={control}
-                name="category"
-                rules={{ required: "Category is required for expenses" }}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Category</FormLabel>
-                    <FormControl>
-                      <AnimatedDropdown
-                        value={field.value}
-                        onChange={(value) => field.onChange(value)}
-                        options={EXPENSE_CATEGORIES}
-                        placeholder="Select category"
-                        error={errors.category}
+      <Tabs
+        defaultValue="expense"
+        value={type}
+        onValueChange={handleTabChange}
+        className="w-full flex items-center"
+      >
+        <TabsList className="grid md:w-1/3 sm:w-auto grid-cols-2 mb-4 sm:mb-6">
+          <TabsTrigger value="expense" className="cursor-pointer">
+            Expenses
+          </TabsTrigger>
+          <TabsTrigger value="income" className="cursor-pointer">
+            Income
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value={type} className="space-y-4 sm:space-y-6">
+          {/* Transaction form */}
+          <Card>
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="text-xl sm:text-2xl">
+                Add New {type === "expense" ? "Expense" : "Income"}
+              </CardTitle>
+              <CardDescription>
+                Fill in the details below to record your{" "}
+                {type === "expense" ? "expense" : "income"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
+              {/* Hidden type field for form */}
+              <input type="hidden" {...register("type")} />
+
+              <FormProvider {...methods}>
+                <form
+                  onSubmit={handleSubmit(onSubmit)}
+                  className="space-y-4 sm:space-y-6"
+                >
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                    {type === "expense" && (
+                      <FormField
+                        control={control}
+                        name="category"
+                        rules={{ required: "Category required" }}
+                        render={({ field, fieldState }) => (
+                          <FormItem>
+                            <FormLabel className="flex items-center gap-2 text-sm sm:text-base">
+                              <Tag className="w-4 h-4" />
+                              Category
+                            </FormLabel>
+                            <FormControl>
+                              <AnimatedDropdown
+                                value={field.value}
+                                onChange={field.onChange}
+                                options={categories.map((c) => c.name)}
+                                placeholder="Select category"
+                                error={!!fieldState.error}
+                                showAddNew={true}
+                                onAddNew={addCategory}
+                                addNewPlaceholder="Add new category"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
                       />
-                    </FormControl>
-                    <FormMessage>{errors.category?.message}</FormMessage>
-                  </FormItem>
-                )}
-              />
-            )}
+                    )}
 
-            <FormField
-              control={control}
-              name="store"
-              rules={{ required: "Description is required" }}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g. Salary or Store..." {...field} />
-                  </FormControl>
-                  <FormMessage>{errors.store?.message}</FormMessage>
-                </FormItem>
-              )}
-            />
+                    <FormField
+                      control={control}
+                      name="store"
+                      rules={{ required: "Description required" }}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2 text-sm sm:text-base">
+                            <FileText className="w-4 h-4" />
+                            Description
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              placeholder={
+                                type === "expense"
+                                  ? "e.g., Grocery shopping"
+                                  : "e.g., Salary payment"
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-            <FormField
-              control={control}
-              name="amount"
-              rules={{
-                required: "Amount is required",
-                min: { value: 1, message: "Amount must be at least 1" },
-              }}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Amount (Rs.)</FormLabel>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormMessage>{errors.amount?.message}</FormMessage>
-                </FormItem>
-              )}
-            />
+                    <FormField
+                      control={control}
+                      name="amount"
+                      rules={{ required: "Amount required" }}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2 text-sm sm:text-base">
+                            <PiggyBank className="w-4 h-4" />
+                            Amount (Rs.)
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              {...field}
+                              placeholder="0.00"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-            <FormField
-              control={control}
-              name="date"
-              rules={{ required: "Date is required" }}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Date</FormLabel>
-                  <FormControl>
-                    <Input type="date" {...field} />
-                  </FormControl>
-                  <FormMessage>{errors.date?.message}</FormMessage>
-                </FormItem>
-              )}
-            />
-          </div>
-          <Button type="submit">
-            <Plus />
-            Add {type === "expense" ? "Expense" : "Income"}
-          </Button>
-        </form>
-      </Form>
+                    <FormField
+                      control={control}
+                      name="date"
+                      rules={{ required: "Date required" }}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2 text-sm sm:text-base">
+                            <Calendar className="w-4 h-4" />
+                            Date
+                          </FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-      <form onSubmit={handleParse} className="mt-4 space-y-2">
-        <textarea
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          rows={3}
-          className="w-full p-3 border rounded"
-          placeholder="e.g. 2000 on food and 4000 on clothes"
-        />
-        <Button type="submit">
-          <Plus />
-          Auto‑Add
-        </Button>
-      </form>
+                  <div className="flex justify-center pt-2 sm:pt-4">
+                    <Button
+                      type="submit"
+                      className={`px-4 sm:px-8 ${
+                        type === "expense"
+                          ? "bg-red-600 hover:bg-red-700"
+                          : "bg-green-600 hover:bg-green-700"
+                      }`}
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add {type === "expense" ? "Expense" : "Income"}
+                    </Button>
+                  </div>
+                </form>
+              </FormProvider>
+            </CardContent>
+          </Card>
 
-      <div className="mt-4 flex items-center gap-4">
-        <Button
-          onClick={deleteSelected}
-          disabled={!selectedIds.length}
-          className="bg-red-600 hover:bg-red-700 disabled:opacity-50"
-        >
-          <Trash />
-          Remove
-        </Button>
-        <label className="flex items-center gap-1">
-          <input
-            type="checkbox"
-            checked={
-              selectedIds.length === transactions.length &&
-              transactions.length > 0
-            }
-            onChange={toggleSelectAll}
-          />
-          Select All
-        </label>
-      </div>
-
-      <div className="mt-6 overflow-x-auto">
-        <table className="min-w-full bg-white">
-          <thead>
-            <tr>
-              <th className="px-4 py-2 bg-gray-200"></th>
-              <th className="px-4 py-2 bg-gray-800 text-white text-left">
-                Type
-              </th>
-              <th className="px-4 py-2 bg-gray-800 text-white text-left">
-                Category
-              </th>
-              <th className="px-4 py-2 bg-gray-800 text-white text-left">
-                Desc
-              </th>
-              <th className="px-4 py-2 bg-gray-800 text-white text-left">
-                Amount
-              </th>
-              <th className="px-4 py-2 bg-gray-800 text-white text-left">
-                Date
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {transactions.length > 0 ? (
-              transactions.map((tx) => (
-                <tr key={tx._id} className="border-b hover:bg-gray-50">
-                  <td className="px-4 py-2">
+          {/* Actions Section */}
+          <Card>
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+                <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
+                  <div className="flex items-center gap-2">
                     <input
                       type="checkbox"
-                      checked={selectedIds.includes(tx._id)}
-                      onChange={() => toggleSelect(tx._id)}
+                      checked={
+                        selectedIds.length === filteredTransactions.length &&
+                        filteredTransactions.length > 0
+                      }
+                      onChange={toggleAll}
+                      className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary focus:ring-2"
                     />
-                  </td>
-                  <td className="px-4 py-2">{tx.type}</td>
-                  <td className="px-4 py-2">{tx.category || "-"}</td>
-                  <td className="px-4 py-2">{tx.store}</td>
-                  <td className="px-4 py-2">Rs. {tx.amount}</td>
-                  <td className="px-4 py-2">
-                    {new Date(tx.date).toLocaleDateString("en-IN")}
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td
-                  colSpan={6}
-                  className="text-center py-4 italic text-gray-500"
+                    <span className="text-xs sm:text-sm font-medium">
+                      Select All ({selectedIds.length} selected)
+                    </span>
+                  </div>
+                </div>
+
+                <Button
+                  onClick={deleteSelected}
+                  disabled={!selectedIds.length}
+                  variant="destructive"
+                  className="bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
                 >
-                  No transactions found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+                  <Trash className="w-4 h-4 mr-2" />
+                  Delete Selected ({selectedIds.length})
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Transactions table */}
+          <Card className="overflow-hidden">
+            <CardContent className="p-0">
+              {loading ? (
+                <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
+                  {Array(5)
+                    .fill(0)
+                    .map((_, i) => (
+                      <div
+                        key={i}
+                        className="flex flex-wrap items-center space-x-2 sm:space-x-4"
+                      >
+                        <Skeleton className="h-4 w-4 rounded" />
+                        <Skeleton className="h-5 sm:h-6 w-14 sm:w-16 rounded-full" />
+                        {type === "expense" && (
+                          <Skeleton className="h-5 sm:h-6 w-20 sm:w-24 rounded" />
+                        )}
+                        <Skeleton className="h-5 sm:h-6 w-32 sm:w-40 rounded" />
+                        <Skeleton className="h-5 sm:h-6 w-20 sm:w-24 rounded" />
+                        <Skeleton className="h-5 sm:h-6 w-28 sm:w-32 rounded" />
+                      </div>
+                    ))}
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b bg-muted/50">
+                        <th className="h-10 sm:h-12 px-3 sm:px-4 text-left align-middle font-medium text-muted-foreground w-[40px]">
+                          <input
+                            type="checkbox"
+                            checked={
+                              selectedIds.length ===
+                                filteredTransactions.length &&
+                              filteredTransactions.length > 0
+                            }
+                            onChange={toggleAll}
+                            className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary focus:ring-2"
+                          />
+                        </th>
+                        <th className="h-10 sm:h-12 px-3 sm:px-4 text-left align-middle font-medium text-muted-foreground w-[80px]">
+                          <span className="hidden sm:inline">Type</span>
+                          <span className="sm:hidden">Type</span>
+                        </th>
+                        {type === "expense" && (
+                          <th className="h-10 sm:h-12 px-3 sm:px-4 text-left align-middle font-medium text-muted-foreground">
+                            <span className="hidden sm:inline">Category</span>
+                            <span className="sm:hidden">Cat.</span>
+                          </th>
+                        )}
+                        <th className="h-10 sm:h-12 px-3 sm:px-4 text-left align-middle font-medium text-muted-foreground">
+                          <span className="hidden sm:inline">Description</span>
+                          <span className="sm:hidden">Desc.</span>
+                        </th>
+                        <th className="h-10 sm:h-12 px-3 sm:px-4 text-left align-middle font-medium text-muted-foreground">
+                          <span className="hidden sm:inline">Amount</span>
+                          <span className="sm:hidden">Amt.</span>
+                        </th>
+                        <th className="h-10 sm:h-12 px-3 sm:px-4 text-left align-middle font-medium text-muted-foreground">
+                          <span className="hidden sm:inline">Date</span>
+                          <span className="sm:hidden">Date</span>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredTransactions.length > 0 ? (
+                        filteredTransactions.map((tx, index) => (
+                          <tr
+                            key={tx._id}
+                            className={`group border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted ${
+                              selectedIds.includes(tx._id) ? "bg-muted" : ""
+                            }`}
+                          >
+                            <td className="p-3 sm:p-4 align-middle">
+                              <input
+                                type="checkbox"
+                                checked={selectedIds.includes(tx._id)}
+                                onChange={() => toggleSelect(tx._id)}
+                                className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary focus:ring-2"
+                              />
+                            </td>
+                            <td className="p-3 sm:p-4 align-middle">
+                              <span
+                                className={`inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                  tx.type === "expense"
+                                    ? "bg-red-100 text-red-800"
+                                    : "bg-green-100 text-green-800"
+                                }`}
+                              >
+                                {tx.type}
+                              </span>
+                            </td>
+                            {type === "expense" && (
+                              <td className="p-3 sm:p-4 align-middle">
+                                <span className="font-medium text-xs sm:text-sm">
+                                  {tx.category || (
+                                    <span className="text-muted-foreground italic">
+                                      None
+                                    </span>
+                                  )}
+                                </span>
+                              </td>
+                            )}
+                            <td className="p-3 sm:p-4 align-middle">
+                              <div className="font-medium text-xs sm:text-sm truncate max-w-[100px] sm:max-w-xs">
+                                {tx.store}
+                              </div>
+                            </td>
+                            <td className="p-3 sm:p-4 align-middle">
+                              <div className="font-semibold text-xs sm:text-sm">
+                                <span
+                                  className={
+                                    tx.type === "expense"
+                                      ? "text-red-600"
+                                      : "text-green-600"
+                                  }
+                                >
+                                  {tx.type === "expense" ? "-" : "+"}Rs.{" "}
+                                  {tx.amount.toLocaleString()}
+                                </span>
+                              </div>
+                            </td>
+                            <td className="p-3 sm:p-4 align-middle text-muted-foreground text-xs sm:text-sm">
+                              {new Date(tx.date).toLocaleDateString("en-IN", {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric",
+                              })}
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td
+                            colSpan={type === "expense" ? 6 : 5}
+                            className="p-8 sm:p-12 text-center"
+                          >
+                            <div className="flex flex-col items-center justify-center">
+                              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-muted rounded-full flex items-center justify-center mb-3 sm:mb-4">
+                                <svg
+                                  className="w-6 h-6 sm:w-8 sm:h-8 text-muted-foreground"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                  />
+                                </svg>
+                              </div>
+                              <h3 className="text-base sm:text-lg font-medium mb-1">
+                                No {type} transactions found
+                              </h3>
+                              <p className="text-muted-foreground text-sm">
+                                Start by adding your first {type} transaction
+                                above.
+                              </p>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
-};
-
-export default Transaction;
+}

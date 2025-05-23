@@ -1,74 +1,48 @@
-import React from "react";
-import {
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-} from "recharts";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import Labelcharts from "./label-charts";
 
-const Labelcharts = ({ data }) => {
-  const { labels, datasets } = data;
-
-  // Transform labels and datasets into Recharts-friendly data array
-  const chartData = labels.map((label, idx) => {
-    const point = { name: label };
-    datasets.forEach((ds) => {
-      point[ds.label] = ds.data[idx] ?? 0;
-    });
-    return point;
-  });
+const ChartSection = ({ data, isLoading = false }) => {
+  if (isLoading) {
+    return <ChartSectionSkeleton />;
+  }
 
   return (
-    <div className="w-full h-64">
-      <ResponsiveContainer width="100%" height="100%">
-        <AreaChart
-          data={chartData}
-          margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-        >
-          <defs>
-            {datasets.map((ds) => (
-              <linearGradient
-                key={ds.label}
-                id={`color${ds.label.replace(/\s+/g, "")}`}
-                x1="0"
-                y1="0"
-                x2="0"
-                y2="1"
-              >
-                <stop offset="5%" stopColor={ds.color} stopOpacity={0.8} />
-                <stop offset="95%" stopColor={ds.color} stopOpacity={0} />
-              </linearGradient>
-            ))}
-          </defs>
-
-          <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-          <YAxis
-            tickFormatter={(value) => `$${value}`}
-            tick={{ fontSize: 12 }}
-          />
-          <CartesianGrid strokeDasharray="3 3" />
-          <Tooltip formatter={(value) => [`$${value}`, ""]} />
-          <Legend />
-
-          {datasets.map((ds) => (
-            <Area
-              key={ds.label}
-              type="monotone"
-              dataKey={ds.label}
-              stroke={ds.color}
-              fillOpacity={1}
-              fill={`url(#color${ds.label.replace(/\s+/g, "")})`}
-              strokeWidth={2}
-            />
-          ))}
-        </AreaChart>
-      </ResponsiveContainer>
-    </div>
+    <Card className="mt-5 overflow-hidden border-0 shadow-xl">
+      <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b pb-4">
+        <CardTitle className="text-xl font-bold text-blue-800">
+          Financial Overview
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-4">
+        <Labelcharts data={data} />
+      </CardContent>
+    </Card>
   );
 };
 
-export default Labelcharts;
+// Skeleton component for loading state
+const ChartSectionSkeleton = () => {
+  return (
+    <Card className="mt-5 overflow-hidden border-0 shadow-xl">
+      <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b pb-4">
+        <Skeleton className="h-7 w-48" />
+      </CardHeader>
+      <CardContent className="p-4">
+        <div className="w-full h-64 flex items-center justify-center bg-slate-50 rounded-lg">
+          <div className="space-y-4 w-full px-8">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-5/6" />
+            <Skeleton className="h-4 w-4/6" />
+            <Skeleton className="h-4 w-3/6" />
+            <Skeleton className="h-4 w-4/6" />
+            <Skeleton className="h-4 w-5/6" />
+            <Skeleton className="h-4 w-full" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default ChartSection;
