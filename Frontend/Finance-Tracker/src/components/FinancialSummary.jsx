@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { DollarSign, TrendingUp, TrendingDown, Wallet } from "lucide-react";
+import { TrendingUp, TrendingDown, Wallet, PiggyBank } from "lucide-react";
 
 const FinancialSummary = ({
   totalIncome,
@@ -18,7 +18,7 @@ const FinancialSummary = ({
       <Card className="overflow-hidden border-0 shadow-lg transition-all hover:shadow-xl">
         <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 pb-2">
           <CardTitle className="flex items-center text-lg text-green-800">
-            <DollarSign className="h-5 w-5 mr-2 text-green-600" />
+            <PiggyBank className="h-5 w-5 mr-2 text-green-600" />
             Total Income
           </CardTitle>
         </CardHeader>

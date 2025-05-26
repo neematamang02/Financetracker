@@ -17,7 +17,6 @@ const Loginpg = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      // Using POST for login. Adjust URL and payload as needed.
       const response = await axios.post(
         "http://localhost:5000/api/auth/login",
         {
@@ -25,12 +24,9 @@ const Loginpg = () => {
           password,
         }
       );
-      // Save token returned from the server
       toast.success("Login successfully");
       localStorage.setItem("token", response.data.token);
-      setTimeout(() => {
-        navigate(DASH_ROUTES.User_dash);
-      }, 100);
+      navigate(DASH_ROUTES.User_dash);
     } catch (err) {
       console.error(err);
       setError(
@@ -81,12 +77,10 @@ const Loginpg = () => {
                     >
                       Forget password?
                     </NavLink>
-                    {/* or */}
                     <p className="text-center text-gray-400">or</p>
                     <div className="flex justify-center">
                       <Googlebutton className="flex items-center" />
                     </div>
-
                     <p className="mt-4 text-xs text-gray-600 text-center">
                       I agree to abide by templatana's
                       <a

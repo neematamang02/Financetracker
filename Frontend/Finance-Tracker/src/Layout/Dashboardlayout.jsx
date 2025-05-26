@@ -1,18 +1,14 @@
-import React, { useState } from "react";
-import { Outlet, Link, useNavigate } from "react-router-dom";
+import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import {
-  MdDashboard,
-  TbReportSearch,
-  FaMoneyBillTransfer,
-  CgProfile,
-  IoMdSettings,
-  BiLogOut,
-  MdSavings,
-  MdManageAccounts,
-} from "../assets/logo/index";
-import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
-import ROUTES from "../routes/routes";
-import DASH_ROUTES from "../routes/dashboardroutes";
+  LayoutDashboard,
+  ArrowLeftRight,
+  PiggyBank,
+  Wallet,
+  FileText,
+  User,
+  Settings,
+  LogOut,
+} from "lucide-react";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -28,21 +24,85 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarRail,
+  SidebarTrigger,
+  useSidebar,
+} from "@/components/ui/sidebar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import Useuser from "@/hooks/use-user";
+import ROUTES from "../routes/routes";
+import DASH_ROUTES from "../routes/dashboardroutes";
 
-const Dashboardlayout = () => {
+// Navigation items
+const navigationItems = [
+  {
+    title: "Overview",
+    url: DASH_ROUTES.User_dash,
+    icon: LayoutDashboard,
+    badge: null,
+  },
+  {
+    title: "Transactions",
+    url: DASH_ROUTES.Transaction_pg,
+    icon: ArrowLeftRight,
+    badge: null,
+  },
+  {
+    title: "Saving Goals",
+    url: DASH_ROUTES.Savinggoal_pg,
+    icon: PiggyBank,
+    badge: "New",
+  },
+  {
+    title: "Budget Manager",
+    url: DASH_ROUTES.Budgetmanage_pg,
+    icon: Wallet,
+    badge: null,
+  },
+  {
+    title: "Reports",
+    url: DASH_ROUTES.Report_pg,
+    icon: FileText,
+    badge: null,
+  },
+];
+
+const accountItems = [
+  {
+    title: "Profile",
+    url: DASH_ROUTES.Userprofile_pg,
+    icon: User,
+  },
+  {
+    title: "Settings",
+    url: ROUTES.User_dash,
+    icon: Settings,
+  },
+];
+
+const AppSidebar = () => {
   const navigate = useNavigate();
-  const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
   const { profileImage } = useUserProfile();
   const { user, loading, error } = Useuser();
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error loading user data: {error.message}</p>;
-
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-    document.body.style.overflow = menuOpen ? "auto" : "hidden";
-  };
+  const { state } = useSidebar();
 
   const handleLogout = async () => {
     try {
@@ -58,232 +118,320 @@ const Dashboardlayout = () => {
     }, 500);
   };
 
-  const LogoutDialog = () => (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <button className="flex items-center gap-3 hover:text-primary focus:outline-none cursor-pointer">
-          <BiLogOut className="mt-1" />
-          Logout
-        </button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-          <AlertDialogDescription>
-            You will be logged out. This action cannot be undone.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel className="cursor-pointer">
-            Cancel
-          </AlertDialogCancel>
-          <AlertDialogAction onClick={handleLogout} className="cursor-pointer">
-            Continue
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  );
+  const isActiveRoute = (url) => {
+    return location.pathname === url;
+  };
 
+  const getInitials = (name) => {
+    return name
+      ?.split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase();
+  };
+
+  if (loading) {
+    return <SidebarSkeleton />;
+  }
+
+  if (error) {
+    return (
+      <Sidebar>
+        <SidebarContent className="flex items-center justify-center">
+          <div className="text-center p-4">
+            <p className="text-red-500">Error loading user data</p>
+            <p className="text-sm text-gray-500">{error.message}</p>
+          </div>
+        </SidebarContent>
+      </Sidebar>
+    );
+  }
+
+  return (
+    <TooltipProvider>
+      <Sidebar collapsible="icon" className="border-r border-gray-200">
+        <SidebarHeader className="border-b border-gray-200">
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                size="lg"
+                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              >
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-bold text-lg">
+                  M
+                </div>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold">Moneymate</span>
+                  <span className="truncate text-xs">Personal Finance</span>
+                </div>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarHeader>
+
+        <SidebarContent>
+          {/* User Profile Section */}
+          <SidebarGroup className="group-data-[collapsible=icon]:hidden">
+            <SidebarGroupContent>
+              <div className="flex items-center gap-3 p-3 mx-2 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100">
+                <Avatar className="h-8 w-8 border-2 border-white shadow-sm">
+                  <AvatarImage
+                    src={
+                      profileImage ||
+                      "https://dummycomp.shopespot.com/uploads/partner/254/promo_images/2024/05/dummy-user.png" ||
+                      "/placeholder.svg"
+                    }
+                    alt={user?.name || "User"}
+                  />
+                  <AvatarFallback className="bg-blue-600 text-white font-semibold text-xs">
+                    {getInitials(user?.name || "User")}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col min-w-0 flex-1">
+                  <span className="text-sm font-semibold text-gray-900 truncate">
+                    {user?.name || "User"}
+                  </span>
+                  <span className="text-xs text-gray-500 truncate">
+                    Welcome back!
+                  </span>
+                </div>
+              </div>
+            </SidebarGroupContent>
+          </SidebarGroup>
+
+          {/* Main Navigation */}
+          <SidebarGroup>
+            <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {navigationItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isActiveRoute(item.url)}
+                      tooltip={item.title}
+                      className={`
+                        relative transition-all duration-200 hover:bg-blue-50 hover:text-blue-700
+                        ${
+                          isActiveRoute(item.url)
+                            ? "bg-blue-100 text-blue-700 border-r-2 border-blue-600 font-medium"
+                            : "text-gray-700"
+                        }
+                      `}
+                    >
+                      <Link
+                        to={item.url}
+                        className="flex items-center gap-3 w-full"
+                      >
+                        <item.icon className="h-4 w-4" />
+                        <span>{item.title}</span>
+                        {item.badge && (
+                          <Badge
+                            variant="secondary"
+                            className="ml-auto bg-green-100 text-green-700 text-xs px-2 py-0.5"
+                          >
+                            {item.badge}
+                          </Badge>
+                        )}
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+
+          {/* Account Section */}
+          <SidebarGroup>
+            <SidebarGroupLabel>Account</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {accountItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isActiveRoute(item.url)}
+                      tooltip={item.title}
+                      className={`
+                        transition-all duration-200 hover:bg-blue-50 hover:text-blue-700
+                        ${
+                          isActiveRoute(item.url)
+                            ? "bg-blue-100 text-blue-700 border-r-2 border-blue-600 font-medium"
+                            : "text-gray-700"
+                        }
+                      `}
+                    >
+                      <Link
+                        to={item.url}
+                        className="flex items-center gap-3 w-full"
+                      >
+                        <item.icon className="h-4 w-4" />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+
+        <SidebarFooter className="border-t border-gray-200">
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <SidebarMenuButton
+                    tooltip="Logout"
+                    className="text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span>Logout</span>
+                  </SidebarMenuButton>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Are you sure you want to logout?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      You will be logged out of your account. This action cannot
+                      be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleLogout}
+                      className="bg-red-600 hover:bg-red-700"
+                    >
+                      Logout
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarFooter>
+
+        <SidebarRail />
+      </Sidebar>
+    </TooltipProvider>
+  );
+};
+
+const SidebarSkeleton = () => {
+  return (
+    <Sidebar>
+      <SidebarHeader className="border-b border-gray-200">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <div className="flex items-center gap-3 p-2">
+              <Skeleton className="h-8 w-8 rounded-lg" />
+              <div className="flex flex-col gap-1">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-3 w-20" />
+              </div>
+            </div>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <div className="flex items-center gap-3 p-3 mx-2 rounded-lg">
+              <Skeleton className="h-8 w-8 rounded-full" />
+              <div className="flex flex-col gap-1 flex-1">
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-3 w-16" />
+              </div>
+            </div>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <Skeleton className="h-4 w-16 mx-3 mb-2" />
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {[...Array(5)].map((_, i) => (
+                <SidebarMenuItem key={i}>
+                  <div className="flex items-center gap-3 p-2 mx-2">
+                    <Skeleton className="h-4 w-4" />
+                    <Skeleton className="h-4 w-20" />
+                  </div>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <Skeleton className="h-4 w-12 mx-3 mb-2" />
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {[...Array(2)].map((_, i) => (
+                <SidebarMenuItem key={i}>
+                  <div className="flex items-center gap-3 p-2 mx-2">
+                    <Skeleton className="h-4 w-4" />
+                    <Skeleton className="h-4 w-16" />
+                  </div>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+
+      <SidebarFooter className="border-t border-gray-200">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <div className="flex items-center gap-3 p-2">
+              <Skeleton className="h-4 w-4" />
+              <Skeleton className="h-4 w-12" />
+            </div>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+    </Sidebar>
+  );
+};
+
+const DashboardLayout = () => {
   return (
     <>
       <Toaster position="top-center" reverseOrder={false} />
+      <SidebarProvider>
+        <div className="flex min-h-screen w-full">
+          <AppSidebar />
+          <SidebarInset className="flex-1">
+            {/* Header */}
+            <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-2 border-b border-gray-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 px-4">
+              <SidebarTrigger className="-ml-1" />
+              <Separator orientation="vertical" className="mr-2 h-4" />
+              <div className="flex items-center gap-2">
+                <h1 className="text-lg font-semibold text-gray-900">
+                  Dashboard
+                </h1>
+              </div>
+              <div className="ml-auto flex items-center gap-2">
+                <Badge variant="outline" className="hidden sm:flex">
+                  Live
+                </Badge>
+              </div>
+            </header>
 
-      {/* Top Nav (Mobile) */}
-      <nav className="flex justify-between items-center py-4 px-6 bg-gray-800 text-white md:hidden">
-        <button onClick={toggleMenu} className="focus:outline-none">
-          {menuOpen ? (
-            <AiOutlineClose size={24} />
-          ) : (
-            <AiOutlineMenu size={24} />
-          )}
-        </button>
-        <div className="text-xl font-bold ml-4">Dashboard</div>
-      </nav>
-
-      <div className="flex">
-        {/* Sidebar for Desktop */}
-        <aside className="hidden md:block w-64 p-4 bg-gray-800 text-white h-screen">
-          <div className="userprofile flex gap-5 p-4">
-            <img
-              src={
-                profileImage ||
-                "https://dummycomp.shopespot.com/uploads/partner/254/promo_images/2024/05/dummy-user.png"
-              }
-              alt="profile"
-              className="rounded-full h-12 w-12 object-cover"
-            />
-            <p className="mt-4">Mr/Mrs. {user?.name || "User"}</p>
-          </div>
-          <div className="p-4 text-lg font-semibold border-b border-gray-700">
-            Dashboard
-          </div>
-          <nav>
-            <ul>
-              <li className="flex gap-3 p-4 hover:bg-gray-700 transition-colors">
-                <MdDashboard className="mt-1" />
-                <Link to={DASH_ROUTES.User_dash} className="hover:text-primary">
-                  Overview
-                </Link>
-              </li>
-              <li className="flex gap-3 p-4 hover:bg-gray-700 transition-colors">
-                <FaMoneyBillTransfer className="mt-1" />
-                <Link
-                  to={DASH_ROUTES.Transaction_pg}
-                  className="hover:text-primary"
-                >
-                  Transactions
-                </Link>
-              </li>
-              <li className="flex gap-3 p-4 hover:bg-gray-700 transition-colors">
-                <MdSavings className="mt-1" />
-                <Link
-                  to={DASH_ROUTES.Savinggoal_pg}
-                  className="hover:text-primary"
-                >
-                  Saving goals
-                </Link>
-              </li>
-              <li className="flex gap-3 p-4 hover:bg-gray-700 transition-colors">
-                <MdManageAccounts className="mt-1" />
-                <Link
-                  to={DASH_ROUTES.Budgetmanage_pg}
-                  className="hover:text-primary"
-                >
-                  Budget Manage
-                </Link>
-              </li>
-              <li className="flex gap-3 p-4 hover:bg-gray-700 transition-colors">
-                <TbReportSearch className="mt-1" />
-                <Link to={DASH_ROUTES.Report_pg} className="hover:text-primary">
-                  Reports
-                </Link>
-              </li>
-            </ul>
-
-            <ul className="mt-5">
-              <p className="p-4 text-gray-500">Account</p>
-              <li className="flex gap-3 p-4 hover:bg-gray-700 transition-colors">
-                <CgProfile className="mt-1" />
-                <Link
-                  to={DASH_ROUTES.Userprofile_pg}
-                  className="hover:text-primary"
-                >
-                  Profile
-                </Link>
-              </li>
-              <li className="flex gap-3 p-4 hover:bg-gray-700 transition-colors">
-                <IoMdSettings className="mt-1" />
-                <Link to={ROUTES.User_dash} className="hover:text-primary">
-                  Settings
-                </Link>
-              </li>
-              <li className="flex p-4 hover:bg-gray-700 transition-colors">
-                {LogoutDialog()}
-              </li>
-            </ul>
-          </nav>
-        </aside>
-
-        {/* Mobile Sidebar */}
-        <div
-          className={`fixed top-0 left-0 h-full w-64 bg-gray-800 text-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 md:hidden ${
-            menuOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
-        >
-          <div className="p-4 flex justify-end">
-            <button onClick={toggleMenu} className="focus:outline-none">
-              <AiOutlineClose size={24} />
-            </button>
-          </div>
-          <div className="userprofile flex gap-5 p-4">
-            <img
-              src="https://static.everypixel.com/ep-pixabay/0329/8099/0858/84037/3298099085884037069-head.png"
-              alt="profile"
-              className="rounded-full h-12 w-12"
-            />
-            <p className="mt-4">Mr. Dummy</p>
-          </div>
-          <div className="p-4 text-lg font-semibold border-b border-gray-700">
-            Dashboard
-          </div>
-          <nav>
-            <ul>
-              <li className="flex gap-3 p-4 hover:bg-gray-700 transition-colors">
-                <MdDashboard className="mt-1" />
-                <Link
-                  to={DASH_ROUTES.User_dash}
-                  className="hover:text-primary"
-                  onClick={toggleMenu}
-                >
-                  Overview
-                </Link>
-              </li>
-              <li className="flex gap-3 p-4 hover:bg-gray-700 transition-colors">
-                <FaMoneyBillTransfer className="mt-1" />
-                <Link
-                  to={DASH_ROUTES.Transaction_pg}
-                  className="hover:text-primary"
-                  onClick={toggleMenu}
-                >
-                  Transactions
-                </Link>
-              </li>
-              <li className="flex gap-3 p-4 hover:bg-gray-700 transition-colors">
-                <TbReportSearch className="mt-1" />
-                <Link
-                  to={DASH_ROUTES.Report_pg}
-                  className="hover:text-primary"
-                  onClick={toggleMenu}
-                >
-                  Reports
-                </Link>
-              </li>
-            </ul>
-            <ul className="mt-5">
-              <p className="p-4 text-gray-500">Account</p>
-              <li className="flex gap-3 p-4 hover:bg-gray-700 transition-colors">
-                <CgProfile className="mt-1" />
-                <Link
-                  to={DASH_ROUTES.Userprofile_pg}
-                  className="hover:text-primary"
-                  onClick={toggleMenu}
-                >
-                  Profile
-                </Link>
-              </li>
-              <li className="flex gap-3 p-4 hover:bg-gray-700 transition-colors">
-                <IoMdSettings className="mt-1" />
-                <Link
-                  to={ROUTES.User_dash}
-                  className="hover:text-primary"
-                  onClick={toggleMenu}
-                >
-                  Settings
-                </Link>
-              </li>
-              <li className="flex p-4 hover:bg-gray-700 transition-color">
-                {LogoutDialog()}
-              </li>
-            </ul>
-          </nav>
+            {/* Main Content */}
+            <main className="flex-1 overflow-auto bg-gray-50 p-6">
+              <div className="mx-auto max-w-7xl">
+                <Outlet />
+              </div>
+            </main>
+          </SidebarInset>
         </div>
-
-        {/* Overlay when mobile menu is open */}
-        {menuOpen && (
-          <div
-            className="fixed inset-0 backdrop-blur-sm md:hidden"
-            onClick={toggleMenu}
-          ></div>
-        )}
-
-        {/* Main Content */}
-        <main className="flex-1 bg-gray-100 p-6 overflow-scroll h-screen">
-          <Outlet />
-        </main>
-      </div>
+      </SidebarProvider>
     </>
   );
 };
 
-export default Dashboardlayout;
+export default DashboardLayout;

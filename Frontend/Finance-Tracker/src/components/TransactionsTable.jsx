@@ -191,7 +191,7 @@ const TransactionsTable = ({
                   onClick={() => handleSort("amount")}
                 >
                   <div className="flex items-center">
-                    <DollarSignIcon className="h-4 w-4 mr-2" />
+                    <PiggyBank className="h-4 w-4 mr-2" />
                     Amount
                     {getSortIcon("amount")}
                   </div>

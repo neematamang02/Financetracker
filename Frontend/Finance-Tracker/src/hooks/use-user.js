@@ -1,4 +1,3 @@
-// src/hooks/useUser.js
 import { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -11,6 +10,7 @@ const Useuser = () => {
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem("token");
+        console.log("Token retrieved from localStorage:", token);
         if (!token) {
           throw new Error("No token found");
         }
@@ -23,8 +23,10 @@ const Useuser = () => {
           "http://localhost:5000/api/auth/me",
           config
         );
+        console.log("User data fetched successfully:", response.data);
         setUser(response.data);
       } catch (err) {
+        console.error("Error fetching user:", err.message);
         setError(err);
       } finally {
         setLoading(false);

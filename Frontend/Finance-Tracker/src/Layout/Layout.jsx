@@ -1,9 +1,9 @@
 import React from "react";
-import Navbar from "../Navigation_bar_menu/Navbar";
 import Footer from "../Pages/Footer";
 import { useLocation } from "react-router-dom";
 import DASH_ROUTES from "../routes/dashboardroutes";
 import { Toaster } from "@/components/ui/sonner";
+import Navbar from "@/Pages/Login&register/Navbar";
 
 const Layout = ({ children }) => {
   const location = useLocation();
