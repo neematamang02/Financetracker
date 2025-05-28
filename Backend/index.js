@@ -10,8 +10,8 @@ import exportRoutes from "./routes/ExportRoutes.js";
 import receiptRoutes from "./routes/ReceiptRoutes.js";
 import goalsRouter from "./routes/Goals.js";
 import categoryRouter from "./routes/categoryRoutes.js";
-import reportRouter from "./routes/ExportRoutes.js";
 import router from "./routes/ExpenseRoutes.js";
+import reportRoutes from "./routes/ReportRoutes.js";
 import budgetRouter from "./routes/BudgetRoutes.js";
 
 dotenv.config();
@@ -35,7 +35,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/expenses", router);
 app.use("/api/categories", categoryRouter);
 app.use("/api/budget", budgetRouter);
-app.use("/api/reports", reportRouter);
+app.use("/api/reports", reportRoutes);
 app.use("/api/export", exportRoutes);
 app.use("/api/receipt", receiptRoutes);
 app.use("/api/goals", goalsRouter);

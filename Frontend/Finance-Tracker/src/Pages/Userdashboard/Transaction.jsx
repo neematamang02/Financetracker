@@ -32,6 +32,7 @@ export default function Transaction() {
 
   // State management
   const [transactions, setTransactions] = useState([]);
+  const [bulkText, setBulkText] = useState("");
   const [loading, setLoading] = useState(true);
   const [selectedIds, setSelectedIds] = useState([]);
   const [type, setType] = useState("expense");
@@ -122,6 +123,26 @@ export default function Transaction() {
     } catch (err) {
       console.error(err);
       toast.error(err.response?.data?.message || "Failed to add transaction");
+    }
+  };
+
+  const handleAutoAdd = async () => {
+    if (!bulkText.trim()) {
+      toast.error("Please enter some text to parse.");
+      return;
+    }
+    const token = localStorage.getItem("token");
+    try {
+      const { data: saved } = await axios.post(
+        "/api/expenses/parse",
+        { text: bulkText },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setTransactions((prev) => [...prev, ...saved]);
+      toast.success(`${saved.length} transactions added!`);
+      setBulkText("");
+    } catch {
+      toast.error("Bulk-add failed.");
     }
   };
 
@@ -376,6 +397,29 @@ export default function Transaction() {
             </CardContent>
           </Card>
 
+          {/* bulk‐text parser card */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Bulk Add from Text</CardTitle>
+              <CardDescription>
+                Describe your transactions one per line, e.g.:
+                <br />
+                “2000 on groceries” or “5000 from salary”
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <textarea
+                rows={4}
+                className="w-full p-3 border rounded"
+                placeholder="e.g. 1500 on food and 4000 from salary"
+                value={bulkText}
+                onChange={(e) => setBulkText(e.target.value)}
+              />
+              <Button onClick={handleAutoAdd}>
+                <Plus className="mr-1" /> Auto-Add Transactions
+              </Button>
+            </CardContent>
+          </Card>
           {/* Actions Section */}
           <Card>
             <CardContent className="p-4 sm:p-6">

@@ -24,7 +24,7 @@ const FinancialSummary = ({
         </CardHeader>
         <CardContent className="pt-4">
           <p className="text-2xl font-bold text-green-600">
-            ${totalIncome.toFixed(2)}
+            Rs {totalIncome.toFixed(2)}
           </p>
         </CardContent>
       </Card>
@@ -38,7 +38,7 @@ const FinancialSummary = ({
         </CardHeader>
         <CardContent className="pt-4">
           <p className="text-2xl font-bold text-red-600">
-            ${totalExpense.toFixed(2)}
+            Rs {totalExpense.toFixed(2)}
           </p>
         </CardContent>
       </Card>
@@ -52,7 +52,7 @@ const FinancialSummary = ({
         </CardHeader>
         <CardContent className="pt-4">
           <p className="text-2xl font-bold text-blue-600">
-            ${totalSavings.toFixed(2)}
+            Rs {totalSavings.toFixed(2)}
           </p>
         </CardContent>
       </Card>
@@ -66,7 +66,7 @@ const FinancialSummary = ({
         </CardHeader>
         <CardContent className="pt-4">
           <p className="text-2xl font-bold text-purple-600">
-            ${totalBudget.toFixed(2)}
+            Rs {totalBudget.toFixed(2)}
           </p>
         </CardContent>
       </Card>
