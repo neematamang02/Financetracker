@@ -5,11 +5,12 @@ export function useCategories() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const API_BASE = import.meta.env.VITE_BACKEND_URL || "";
 
   const fetch = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("/api/categories", {
+      const res = await axios.get(`${API_BASE}/api/categories`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setCategories(res.data);
@@ -28,7 +29,7 @@ export function useCategories() {
   const addCategory = async (name) => {
     const token = localStorage.getItem("token");
     const res = await axios.post(
-      "/api/categories",
+      `${API_BASE}/api/categories`,
       { name },
       { headers: { Authorization: `Bearer ${token}` } }
     );

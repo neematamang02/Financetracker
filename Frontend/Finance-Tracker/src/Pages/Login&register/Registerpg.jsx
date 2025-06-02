@@ -19,7 +19,6 @@ const Registerpg = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const API_BASE = import.meta.env.VITE_BACKEND_URL || "";
 
   const registeruserchange = (e) => {
     setuserdata({ ...userdata, [e.target.name]: e.target.value });
@@ -31,7 +30,7 @@ const Registerpg = () => {
     try {
       // Log to verify data before sending
       console.log("User data to be sent:", userdata);
-      const response = await axios.post(`${API_BASE}/api/auth/register`, {
+      const response = await axios.post(`/api/auth/register`, {
         name: userdata.fullname,
         email: userdata.email,
         password: userdata.password,

@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-
-// Centralize your backend URL here:
-export const API_BASE_URL = "http://localhost:5000";
+const API_BASE = import.meta.env.VITE_BACKEND_URL || "";
 
 // Custom hook to fetch and store user profile data
 export const useUserProfile = () => {
@@ -14,14 +12,14 @@ export const useUserProfile = () => {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem("token");
-        const { data } = await axios.get(`${API_BASE_URL}/api/auth/me`, {
+        const { data } = await axios.get(`${API_BASE}/api/auth/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setName(data.name);
         setEmail(data.email);
         // Prepend base URL so the <img> tag can resolve it
         setProfileImage(
-          data.profileImage ? `${API_BASE_URL}${data.profileImage}` : ""
+          data.profileImage ? `${API_BASE}${data.profileImage}` : ""
         );
       } catch (err) {
         console.error("Error fetching user data:", err);

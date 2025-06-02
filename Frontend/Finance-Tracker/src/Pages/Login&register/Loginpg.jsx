@@ -15,15 +15,10 @@ const Loginpg = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const API_BASE = import.meta.env.VITE_BACKEND_URL || "";
-
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${API_BASE}/api/auth/login`, {
-        email,
-        password,
-      });
+      const response = await axios.post("/api/auth/login", { email, password });
       toast.success("Login successfully");
       localStorage.setItem("token", response.data.token);
       navigate(DASH_ROUTES.User_dash);
