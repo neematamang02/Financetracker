@@ -1,9 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import Expense from "../Models/Expense.js";
-import Budget from "../models/Budget.js";
 import authMiddleware from "../middleware/authMiddleware.js";
-
 const reportRouter = express.Router();
 
 reportRouter.get("/monthly/:yearMonth", authMiddleware, async (req, res) => {

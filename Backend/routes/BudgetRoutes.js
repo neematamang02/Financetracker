@@ -1,5 +1,6 @@
 import express from "express";
 import authMiddleware from "../middleware/authMiddleware.js";
+import Budget from "../models/Budget.js";
 
 const budgetRouter = express.Router();
 // GET all budgets for a user, sorted by month desc
