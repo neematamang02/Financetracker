@@ -1,18 +1,6 @@
 import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
-import {
-  LayoutDashboard,
-  ArrowLeftRight,
-  PiggyBank,
-  Wallet,
-  FileText,
-  User,
-  Settings,
-  LogOut,
-} from "lucide-react";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
-
-import { useUserProfile } from "@/components/Helper";
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -39,7 +27,6 @@ import {
   SidebarProvider,
   SidebarRail,
   SidebarTrigger,
-  useSidebar,
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
@@ -49,37 +36,49 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Useuser from "@/hooks/use-user";
 import ROUTES from "../routes/routes";
 import DASH_ROUTES from "../routes/dashboardroutes";
+import {
+  ArrowSwapHorizontal,
+  DocumentText,
+  Element3,
+  Logout,
+  Setting3,
+  User,
+  Wallet,
+  WalletAdd1,
+} from "iconsax-reactjs";
 
 // Navigation items
 const navigationItems = [
   {
     title: "Overview",
     url: DASH_ROUTES.User_dash,
-    icon: LayoutDashboard,
+    icon: () => <Element3 size="32" color="#555555" variant="Bulk" />,
     badge: null,
   },
   {
     title: "Transactions",
     url: DASH_ROUTES.Transaction_pg,
-    icon: ArrowLeftRight,
+    icon: () => (
+      <ArrowSwapHorizontal size="32" color="#555555" variant="Bulk" />
+    ),
     badge: null,
   },
   {
     title: "Saving Goals",
     url: DASH_ROUTES.Savinggoal_pg,
-    icon: PiggyBank,
+    icon: () => <WalletAdd1 size="32" color="#555555" variant="Bulk" />,
     badge: "New",
   },
   {
     title: "Budget Manager",
     url: DASH_ROUTES.Budgetmanage_pg,
-    icon: Wallet,
+    icon: () => <Wallet size="32" color="#555555" variant="Bulk" />,
     badge: null,
   },
   {
     title: "Reports",
     url: DASH_ROUTES.Report_pg,
-    icon: FileText,
+    icon: () => <DocumentText size="32" color="#555555" variant="Bulk" />,
     badge: null,
   },
 ];
@@ -88,21 +87,19 @@ const accountItems = [
   {
     title: "Profile",
     url: DASH_ROUTES.Userprofile_pg,
-    icon: User,
+    icon: () => <User size="32" color="#555555" variant="Bulk" />,
   },
   {
     title: "Settings",
     url: ROUTES.User_dash,
-    icon: Settings,
+    icon: () => <Setting3 size="32" color="#555555" variant="Bulk" />,
   },
 ];
 
 const AppSidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { profileImage } = useUserProfile();
   const { user, loading, error } = Useuser();
-  const { state } = useSidebar();
 
   const handleLogout = async () => {
     try {
@@ -176,11 +173,7 @@ const AppSidebar = () => {
               <div className="flex items-center gap-3 p-3 mx-2 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100">
                 <Avatar className="h-8 w-8 border-2 border-white shadow-sm">
                   <AvatarImage
-                    src={
-                      profileImage ||
-                      "https://dummycomp.shopespot.com/uploads/partner/254/promo_images/2024/05/dummy-user.png" ||
-                      "/placeholder.svg"
-                    }
+                    src={user?.profileImage || "https://github.com/shadcn.png"}
                     alt={user?.name || "User"}
                   />
                   <AvatarFallback className="bg-blue-600 text-white font-semibold text-xs">
@@ -283,9 +276,9 @@ const AppSidebar = () => {
                 <AlertDialogTrigger asChild>
                   <SidebarMenuButton
                     tooltip="Logout"
-                    className="text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors"
+                    className="text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors cursor-pointer"
                   >
-                    <LogOut className="h-4 w-4" />
+                    <Logout size="32" color="red" variant="Bulk" />
                     <span>Logout</span>
                   </SidebarMenuButton>
                 </AlertDialogTrigger>

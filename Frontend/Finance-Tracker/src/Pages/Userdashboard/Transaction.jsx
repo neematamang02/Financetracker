@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import { useForm, FormProvider } from "react-hook-form";
 import { toast } from "sonner";
-import { Plus, Trash, Calendar, FileText, Tag, PiggyBank } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   FormField,
@@ -24,6 +23,16 @@ import {
 import Useuser from "@/hooks/use-user";
 import { useCategories } from "@/hooks/use-categories";
 import AnimatedDropdown from "@/components/AnimatedDropdown";
+import {
+  Add,
+  Calendar,
+  DocumentText,
+  MoneyAdd,
+  MoneyRemove,
+  Tag,
+  Trash,
+  Wallet,
+} from "iconsax-reactjs";
 
 export default function Transaction() {
   // Custom hooks for user and categories
@@ -255,9 +264,21 @@ export default function Transaction() {
       >
         <TabsList className="grid md:w-1/3 sm:w-auto grid-cols-2 mb-4 sm:mb-6">
           <TabsTrigger value="expense" className="cursor-pointer">
+            <MoneyRemove
+              size="32"
+              color="#555555"
+              variant="Bulk"
+              className="mr-1"
+            />
             Expenses
           </TabsTrigger>
           <TabsTrigger value="income" className="cursor-pointer">
+            <MoneyAdd
+              size="32"
+              color="#555555"
+              variant="Bulk"
+              className="mr-1"
+            />
             Income
           </TabsTrigger>
         </TabsList>
@@ -292,7 +313,7 @@ export default function Transaction() {
                         render={({ field, fieldState }) => (
                           <FormItem>
                             <FormLabel className="flex items-center gap-2 text-sm sm:text-base">
-                              <Tag className="w-4 h-4" />
+                              <Tag size="32" color="#555555" variant="Bulk" />
                               Category
                             </FormLabel>
                             <FormControl>
@@ -320,7 +341,11 @@ export default function Transaction() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="flex items-center gap-2 text-sm sm:text-base">
-                            <FileText className="w-4 h-4" />
+                            <DocumentText
+                              size="32"
+                              color="#555555"
+                              variant="Bulk"
+                            />
                             Description
                           </FormLabel>
                           <FormControl>
@@ -345,7 +370,7 @@ export default function Transaction() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="flex items-center gap-2 text-sm sm:text-base">
-                            <PiggyBank className="w-4 h-4" />
+                            <Wallet size="32" color="#555555" variant="Bulk" />
                             Amount (Rs.)
                           </FormLabel>
                           <FormControl>
@@ -367,7 +392,11 @@ export default function Transaction() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="flex items-center gap-2 text-sm sm:text-base">
-                            <Calendar className="w-4 h-4" />
+                            <Calendar
+                              size="32"
+                              color="#555555"
+                              variant="Bulk"
+                            />
                             Date
                           </FormLabel>
                           <FormControl>
@@ -382,13 +411,18 @@ export default function Transaction() {
                   <div className="flex justify-center pt-2 sm:pt-4">
                     <Button
                       type="submit"
-                      className={`px-4 sm:px-8 ${
+                      className={`px-4 sm:px-8 cursor-pointer ${
                         type === "expense"
                           ? "bg-red-600 hover:bg-red-700"
                           : "bg-green-600 hover:bg-green-700"
                       }`}
                     >
-                      <Plus className="w-4 h-4 mr-2" />
+                      <Add
+                        size="32"
+                        color="#fff"
+                        variant="Bulk"
+                        className="mr-2"
+                      />
                       Add {type === "expense" ? "Expense" : "Income"}
                     </Button>
                   </div>
@@ -415,8 +449,9 @@ export default function Transaction() {
                 value={bulkText}
                 onChange={(e) => setBulkText(e.target.value)}
               />
-              <Button onClick={handleAutoAdd}>
-                <Plus className="mr-1" /> Auto-Add Transactions
+              <Button onClick={handleAutoAdd} className="cursor-pointer">
+                <Add size="32" color="#fff" variant="Bulk" className="mr-2" />{" "}
+                Auto-Add Transactions
               </Button>
             </CardContent>
           </Card>
@@ -445,9 +480,14 @@ export default function Transaction() {
                   onClick={deleteSelected}
                   disabled={!selectedIds.length}
                   variant="destructive"
-                  className="bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
+                  className="bg-red-600 cursor-pointer hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
                 >
-                  <Trash className="w-4 h-4 mr-2" />
+                  <Trash
+                    size="32"
+                    color="#fff"
+                    variant="Bulk"
+                    className="mr-2"
+                  />
                   Delete Selected ({selectedIds.length})
                 </Button>
               </div>
@@ -520,7 +560,7 @@ export default function Transaction() {
                     </thead>
                     <tbody>
                       {filteredTransactions.length > 0 ? (
-                        filteredTransactions.map((tx, index) => (
+                        filteredTransactions.map((tx) => (
                           <tr
                             key={tx._id}
                             className={`group border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted ${

@@ -11,16 +11,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Plus,
-  Trash2,
-  Target,
-  Calendar,
-  DollarSign,
-  PiggyBank,
-  TrendingUp,
-  AlertCircle,
-} from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import {
   Card,
   CardHeader,
@@ -42,6 +33,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Add, Calendar, Radar2, Trash, TrendUp, Wallet } from "iconsax-reactjs";
 
 const SavingGoals = () => {
   const [goals, setGoals] = useState([]);
@@ -148,12 +140,20 @@ const SavingGoals = () => {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <CardTitle className="text-2xl font-bold text-purple-800 flex items-center gap-2">
-                <PiggyBank className="h-6 w-6 text-purple-600" />
+                <Wallet
+                  size="32"
+                  variant="Bulk"
+                  className="h-6 w-6 text-purple-600"
+                />
                 Savings Goals
               </CardTitle>
             </div>
             <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow-sm">
-              <TrendingUp className="h-5 w-5 text-green-600" />
+              <TrendUp
+                size="32"
+                variant="Bulk"
+                className="h-5 w-5 text-green-600"
+              />
               <div>
                 <span className="text-sm text-gray-500">Total Savings</span>
                 <p className="text-xl font-bold text-green-600">
@@ -179,7 +179,11 @@ const SavingGoals = () => {
           {/* New Goal Form */}
           <div className="mb-8">
             <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <Target className="h-5 w-5 text-purple-600" />
+              <Radar2
+                size="32"
+                variant="Bulk"
+                className="h-5 w-5 text-purple-600"
+              />
               Add New Goal
             </h3>
             <Form {...form}>
@@ -245,7 +249,12 @@ const SavingGoals = () => {
                   type="submit"
                   className="bg-purple-600 hover:bg-purple-700 flex items-center gap-2"
                 >
-                  <Plus className="h-4 w-4" />
+                  <Add
+                    size="32"
+                    color="#fff"
+                    variant="Bulk"
+                    className="h-4 w-4"
+                  />
                   Add Goal
                 </Button>
               </form>
@@ -289,7 +298,7 @@ const SavingGoals = () => {
                       <div className="space-y-4">
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-500 flex items-center gap-1">
-                            <DollarSign className="h-4 w-4" />
+                            <Radar2 size="20" className="mr-2" variant="Bulk" />
                             Target
                           </span>
                           <span className="font-medium">
@@ -299,7 +308,7 @@ const SavingGoals = () => {
 
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-500 flex items-center gap-1">
-                            <PiggyBank className="h-4 w-4" />
+                            <Wallet size="20" className="mr-2" variant="Bulk" />
                             Saved
                           </span>
                           <span className="font-medium">
@@ -309,8 +318,11 @@ const SavingGoals = () => {
 
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-500 flex items-center gap-1">
-                            <Calendar className="h-4 w-4" />
-                            Deadline
+                            <Calendar
+                              size="20"
+                              variant="Bulk"
+                              className="mr-2"
+                            />
                           </span>
                           <span className="font-medium">
                             {new Date(goal.deadline).toLocaleDateString(
@@ -354,7 +366,7 @@ const SavingGoals = () => {
                             variant="outline"
                             className="w-full border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
                           >
-                            <Trash2 className="h-4 w-4 mr-2" />
+                            <Trash variant="bulk" size="32" className=" mr-2" />
                             Delete Goal
                           </Button>
                         </AlertDialogTrigger>
@@ -362,8 +374,9 @@ const SavingGoals = () => {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              This will permanently delete the savings goal "
-                              {goal.name}". This action cannot be undone.
+                              This will permanently delete the savings goal
+                              &quot;
+                              {goal.name}&quot;. This action cannot be undone.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
@@ -384,7 +397,10 @@ const SavingGoals = () => {
             </div>
           ) : (
             <div className="text-center py-12 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-              <PiggyBank className="h-12 w-12 mx-auto text-gray-400 mb-3" />
+              <Wallet
+                variant="bulk"
+                className="h-12 w-12 mx-auto text-gray-400 mb-3"
+              />
               <h3 className="text-lg font-medium text-gray-900 mb-1">
                 No savings goals yet
               </h3>
@@ -397,7 +413,7 @@ const SavingGoals = () => {
                 }
                 className="bg-purple-600 hover:bg-purple-700"
               >
-                <Plus className="h-4 w-4 mr-2" />
+                <Add variant="bulk" size="32" color="white" className="mr-2" />
                 Add Your First Goal
               </Button>
             </div>
@@ -422,7 +438,11 @@ function AddToGoalForm({ goalId, onAdd }) {
   return (
     <form onSubmit={handle} className="flex w-full gap-2">
       <div className="relative flex-1">
-        <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <Wallet
+          variant="bulk"
+          size="32"
+          className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400"
+        />
         <Input
           id="amount-input"
           type="number"
@@ -434,7 +454,7 @@ function AddToGoalForm({ goalId, onAdd }) {
         />
       </div>
       <Button type="submit" className="bg-green-600 hover:bg-green-700">
-        <Plus className="h-4 w-4 mr-2" />
+        <Add variant="bulk" size="32" color="#000" className="mr-2" />
         Add
       </Button>
     </form>

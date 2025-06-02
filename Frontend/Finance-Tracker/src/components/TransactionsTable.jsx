@@ -1,17 +1,5 @@
 import { useState } from "react";
 import {
-  ArrowDownIcon,
-  ArrowUpIcon,
-  CalendarIcon,
-  TagIcon,
-  Trash2Icon,
-  DollarSignIcon,
-  SearchIcon,
-  FilterIcon,
-  PiggyBank,
-  Wallet,
-} from "lucide-react";
-import {
   Card,
   CardHeader,
   CardTitle,
@@ -29,6 +17,18 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Activity,
+  ArrowDown2,
+  ArrowUp2,
+  Calendar,
+  Filter,
+  Grid9,
+  SearchNormal,
+  Tag,
+  Trash,
+  Wallet1,
+} from "iconsax-reactjs";
 
 const TransactionsTable = ({
   transactions = [],
@@ -99,9 +99,9 @@ const TransactionsTable = ({
   const getSortIcon = (key) => {
     if (sortConfig.key !== key) return null;
     return sortConfig.direction === "asc" ? (
-      <ArrowUpIcon className="h-4 w-4 ml-1" />
+      <ArrowUp2 size="20" variant="Bulk" className="ml-2" />
     ) : (
-      <ArrowDownIcon className="h-4 w-4 ml-1" />
+      <ArrowDown2 size="20" variant="Bulk" className="ml-2" />
     );
   };
 
@@ -115,14 +115,17 @@ const TransactionsTable = ({
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <CardTitle className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-              <PiggyBank className="h-6 w-6 text-blue-600" />
+              <Wallet1 variant="bulk" size="32" className="text-blue-600" />
               Recent Transactions
             </CardTitle>
             <CardDescription>Your latest financial activities</CardDescription>
           </div>
           <div className="flex flex-col sm:flex-row gap-2">
             <div className="relative">
-              <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <SearchNormal
+                variant="bulk"
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400"
+              />
               <Input
                 placeholder="Search transactions..."
                 value={searchTerm}
@@ -133,7 +136,7 @@ const TransactionsTable = ({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="h-9">
-                  <FilterIcon className="h-4 w-4 mr-2" />
+                  <Filter variant="bulk" className="h-4 w-4 mr-2" />
                   Filter
                 </Button>
               </DropdownMenuTrigger>
@@ -171,7 +174,7 @@ const TransactionsTable = ({
                   onClick={() => handleSort("category")}
                 >
                   <div className="flex items-center">
-                    <TagIcon className="h-4 w-4 mr-2" />
+                    <Tag variant="bulk" className="h-4 w-4 mr-2" />
                     Category
                     {getSortIcon("category")}
                   </div>
@@ -181,7 +184,7 @@ const TransactionsTable = ({
                   onClick={() => handleSort("type")}
                 >
                   <div className="flex items-center">
-                    <Wallet className="h-4 w-4 mr-2" />
+                    <Grid9 variant="bulk" className="h-4 w-4 mr-2" />
                     Type
                     {getSortIcon("type")}
                   </div>
@@ -191,7 +194,7 @@ const TransactionsTable = ({
                   onClick={() => handleSort("amount")}
                 >
                   <div className="flex items-center">
-                    <PiggyBank className="h-4 w-4 mr-2" />
+                    <Wallet1 variant="bulk" className="h-4 w-4 mr-2" />
                     Amount
                     {getSortIcon("amount")}
                   </div>
@@ -201,13 +204,16 @@ const TransactionsTable = ({
                   onClick={() => handleSort("date")}
                 >
                   <div className="flex items-center">
-                    <CalendarIcon className="h-4 w-4 mr-2" />
+                    <Calendar variant="bulk" className="h-4 w-4 mr-2" />
                     Date
                     {getSortIcon("date")}
                   </div>
                 </th>
                 <th className="bg-slate-800 text-white px-6 py-3 text-center text-sm font-semibold uppercase tracking-wider">
-                  Actions
+                  <div className="flex items-center">
+                    <Activity variant="bulk" className="h-4 w-4 mr-2" />
+                    Actions
+                  </div>
                 </th>
               </tr>
             </thead>
@@ -288,7 +294,7 @@ const TransactionsTable = ({
                         {showConfirmDelete === (transaction._id || index) ? (
                           "Confirm Delete"
                         ) : (
-                          <Trash2Icon className="h-4 w-4" />
+                          <Trash variant="bulk" className="h-4 w-4" />
                         )}
                       </Button>
                     </td>
@@ -301,7 +307,10 @@ const TransactionsTable = ({
                     className="px-6 py-8 text-center text-gray-500"
                   >
                     <div className="flex flex-col items-center justify-center">
-                      <PiggyBank className="h-12 w-12 text-gray-300 mb-3" />
+                      <Wallet1
+                        variant="bulk"
+                        className="h-12 w-12 text-gray-300 mb-3"
+                      />
                       <p className="text-lg font-medium text-gray-600 mb-1">
                         No transactions found
                       </p>
@@ -325,7 +334,7 @@ const TransactionsTable = ({
             transactions
           </p>
           <div className="flex items-center gap-2">
-            <PiggyBank className="h-5 w-5 text-green-600" />
+            <Wallet1 variant="bulk" className="h-5 w-5 text-green-600" />
             <p className="text-lg font-semibold text-gray-800">
               Total Budget:{" "}
               <span className="text-green-600">${totalBudget.toFixed(2)}</span>
@@ -360,25 +369,25 @@ const TransactionsTableSkeleton = () => {
               <tr>
                 <th className="bg-slate-800 text-white px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
                   <div className="flex items-center">
-                    <TagIcon className="h-4 w-4 mr-2" />
+                    <Tag variant="bulk" className="h-4 w-4 mr-2" />
                     Category
                   </div>
                 </th>
                 <th className="bg-slate-800 text-white px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
                   <div className="flex items-center">
-                    <Wallet className="h-4 w-4 mr-2" />
+                    <Grid9 variant="bulk" className="h-4 w-4 mr-2" />
                     Type
                   </div>
                 </th>
                 <th className="bg-slate-800 text-white px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
                   <div className="flex items-center">
-                    <DollarSignIcon className="h-4 w-4 mr-2" />
+                    <Wallet1 variant="bulk" className="h-4 w-4 mr-2" />
                     Amount
                   </div>
                 </th>
                 <th className="bg-slate-800 text-white px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
                   <div className="flex items-center">
-                    <CalendarIcon className="h-4 w-4 mr-2" />
+                    <Calendar variant="bulk" className="h-4 w-4 mr-2" />
                     Date
                   </div>
                 </th>

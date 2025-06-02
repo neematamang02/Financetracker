@@ -1,5 +1,3 @@
-// backend/utils/parseTransactions.js
-
 const STOP_WORDS = new Set([
   "the",
   "and",

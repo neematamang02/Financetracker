@@ -1,6 +1,6 @@
-import React, { useState } from "react";
 import Buttons from "../../components/Buttons";
 import axios from "axios";
+import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 
 const Forgetpassword = () => {

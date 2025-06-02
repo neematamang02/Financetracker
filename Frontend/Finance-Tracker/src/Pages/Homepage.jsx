@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { landingpgimg } from "../assets/images";
 import Buttons from "../components/Buttons";
 import Features from "./Features";

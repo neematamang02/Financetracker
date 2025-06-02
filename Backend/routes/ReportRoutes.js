@@ -1,4 +1,3 @@
-// backend/routes/ReportRoutes.js
 import express from "express";
 import PDFDocument from "pdfkit";
 import authMiddleware from "../middleware/authMiddleware.js";

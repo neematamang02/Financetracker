@@ -1,4 +1,3 @@
-import React from "react";
 import Footer from "../Pages/Footer";
 import { useLocation } from "react-router-dom";
 import DASH_ROUTES from "../routes/dashboardroutes";

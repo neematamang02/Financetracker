@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { useUserProfile } from "@/components/Helper";
 
@@ -73,10 +73,7 @@ const UserProfile = () => {
       </div>
       <div className="userprofileimg flex flex-col justify-center mb-8">
         <img
-          src={
-            profileImage ||
-            "https://dummycomp.shopespot.com/uploads/partner/254/promo_images/2024/05/dummy-user.png"
-          }
+          src={profileImage || "https://github.com/shadcn.png"}
           alt="userimage"
           className="rounded-full object-cover h-40 w-40 m-auto"
         />

@@ -1,4 +1,3 @@
-// src/components/Navbar.jsx
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -52,7 +51,7 @@ const Navbar = () => {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            class="icon icon-tabler icons-tabler-outline icon-tabler-coin-monero"
+            className="icon icon-tabler icons-tabler-outline icon-tabler-coin-monero"
           >
             <path stroke="none" d="M0 0h24v24H0z" fill="none" />
             <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
@@ -91,7 +90,7 @@ const Navbar = () => {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                class="icon icon-tabler icons-tabler-outline icon-tabler-menu-4"
+                className="icon icon-tabler icons-tabler-outline icon-tabler-menu-4"
               >
                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                 <path d="M7 6h10" />
@@ -154,7 +153,7 @@ const Navbar = () => {
                       strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      class="icon icon-tabler icons-tabler-outline icon-tabler-x hover:rotate-90 duration-300 ease-in-out"
+                      className="icon icon-tabler icons-tabler-outline icon-tabler-x hover:rotate-90 duration-300 ease-in-out"
                     >
                       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                       <path d="M18 6l-12 12" />

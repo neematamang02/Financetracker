@@ -1,17 +1,30 @@
-import { defineConfig } from "vite";
+// vite.config.js
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
-export default defineConfig({
-  plugins: [react(), tailwindcss()],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
+
+export default ({ mode }) => {
+  // Load all environment variables from `.env[.mode]`
+  // Third argument '' ensures we get the raw values (not only VITE_ prefixed).
+  const env = loadEnv(mode, process.cwd(), "");
+
+  return defineConfig({
+    plugins: [react(), tailwindcss()],
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "./src"),
+      },
     },
-  },
-  server: {
-    proxy: {
-      "/api": "http://localhost:5000", // ✅ Proxy for backend API requests
+    server: {
+      proxy: {
+        // Use the value of VITE_BACKEND_URL from your .env
+        "/api": {
+          target: env.VITE_BACKEND_URL,
+          changeOrigin: true,
+          secure: false,
+        },
+      },
     },
-  },
-});
+  });
+};

@@ -1,4 +1,3 @@
-import React from "react";
 import { DollarSign, Tag, Table, BarChart2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
