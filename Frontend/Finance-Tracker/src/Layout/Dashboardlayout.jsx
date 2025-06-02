@@ -46,6 +46,7 @@ import {
   Wallet,
   WalletAdd1,
 } from "iconsax-reactjs";
+import { useUserProfile } from "@/components/Helper";
 
 // Navigation items
 const navigationItems = [
@@ -100,6 +101,7 @@ const AppSidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, loading, error } = Useuser();
+  const { profileImage } = useUserProfile();
 
   const handleLogout = async () => {
     try {
@@ -173,7 +175,8 @@ const AppSidebar = () => {
               <div className="flex items-center gap-3 p-3 mx-2 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100">
                 <Avatar className="h-8 w-8 border-2 border-white shadow-sm">
                   <AvatarImage
-                    src={user?.profileImage || "https://github.com/shadcn.png"}
+                    //
+                    src={profileImage || "https://github.com/shadcn.png"}
                     alt={user?.name || "User"}
                   />
                   <AvatarFallback className="bg-blue-600 text-white font-semibold text-xs">
