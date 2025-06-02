@@ -16,7 +16,13 @@ import budgetRouter from "./routes/BudgetRoutes.js";
 
 dotenv.config();
 const app = express();
-app.use(cors());
+// app.use(cors());
+app.use(
+  cors({
+    origin: "https://financetracker-web.onrender.com",
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 const __filename = fileURLToPath(import.meta.url);
