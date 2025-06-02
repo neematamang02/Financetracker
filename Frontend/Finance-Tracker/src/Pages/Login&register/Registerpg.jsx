@@ -30,16 +30,13 @@ const Registerpg = () => {
     try {
       // Log to verify data before sending
       console.log("User data to be sent:", userdata);
-      const response = await axios.post(
-        "http://localhost:5000/api/auth/register",
-        {
-          name: userdata.fullname,
-          email: userdata.email,
-          password: userdata.password,
-          cpassword: userdata.cpassword,
-          monthlyIncome: Number(userdata.monthlyIncome),
-        }
-      );
+      const response = await axios.post("/api/auth/register", {
+        name: userdata.fullname,
+        email: userdata.email,
+        password: userdata.password,
+        cpassword: userdata.cpassword,
+        monthlyIncome: Number(userdata.monthlyIncome),
+      });
       toast.success("Registration successful! Please log in.");
       navigate(ROUTES.Login_Page);
     } catch (err) {
