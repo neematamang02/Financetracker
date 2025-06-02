@@ -19,10 +19,7 @@ const Useuser = () => {
             Authorization: `Bearer ${token}`,
           },
         };
-        const response = await axios.get(
-          "http://localhost:5000/api/auth/me",
-          config
-        );
+        const response = await axios.get("/api/auth/me", config);
         console.log("User data fetched successfully:", response.data);
         setUser(response.data);
       } catch (err) {

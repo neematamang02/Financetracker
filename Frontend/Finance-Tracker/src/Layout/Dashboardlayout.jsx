@@ -105,7 +105,7 @@ const AppSidebar = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.get("http://localhost:5000/api/auth/logout");
+      await axios.get("/api/auth/logout");
     } catch (error) {
       console.error("Logout error:", error);
     }

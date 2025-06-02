@@ -14,10 +14,9 @@ const Forgetpassword = () => {
     setMessage("");
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/auth/forgot-password",
-        { email }
-      );
+      const response = await axios.post("/api/auth/forgot-password", {
+        email,
+      });
       setMessage(response.data.message);
       toast.success(response.data.message);
       setEmail("");

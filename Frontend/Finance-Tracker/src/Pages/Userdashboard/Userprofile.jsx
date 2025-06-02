@@ -23,7 +23,7 @@ const UserProfile = () => {
         updateData.currentPassword = currentPassword;
         updateData.newPassword = newPassword;
       }
-      await axios.put("http://localhost:5000/api/auth/update", updateData, {
+      await axios.put("/api/auth/update", updateData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert("Profile updated successfully");
@@ -44,7 +44,7 @@ const UserProfile = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        "http://localhost:5000/api/auth/upload-image", // Adjust this URL to match your server’s endpoint
+        "/api/auth/upload-image", // Adjust this URL to match your server’s endpoint
         formData,
         {
           headers: {
@@ -55,7 +55,7 @@ const UserProfile = () => {
       );
 
       // Construct the full URL by prepending the server’s base URL
-      const serverBaseUrl = "http://localhost:5000"; // Adjust this if your server runs on a different port
+      const serverBaseUrl = import.meta.env.VITE_BACKEND_URL; // Adjust this if your server runs on a different port
       const fullUrl = `${serverBaseUrl}${response.data.profileImage}`;
       setProfileImage(fullUrl);
 
