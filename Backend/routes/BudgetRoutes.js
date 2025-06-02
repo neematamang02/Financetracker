@@ -1,9 +1,7 @@
 import express from "express";
-import Budget from "../models/Budget.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 
 const budgetRouter = express.Router();
-
 // GET all budgets for a user, sorted by month desc
 budgetRouter.get("/user/:userId", authMiddleware, async (req, res) => {
   if (req.user.id !== req.params.userId) {
