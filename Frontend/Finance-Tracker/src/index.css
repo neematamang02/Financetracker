@@ -119,7 +119,3 @@
     @apply bg-background text-foreground;
   }
 }
-
-body {
-  font-family: "Space Mono", sans-serif;
-}
