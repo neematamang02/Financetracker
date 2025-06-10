@@ -5,8 +5,6 @@ import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 
 export default ({ mode }) => {
-  // Load all environment variables from `.env[.mode]`
-  // Third argument '' ensures we get the raw values (not only VITE_ prefixed).
   const env = loadEnv(mode, process.cwd(), "");
 
   return defineConfig({
