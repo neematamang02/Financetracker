@@ -1,494 +1,419 @@
-// const STOP_WORDS = new Set([
-//   "the",
-//   "and",
-//   "for",
-//   "to",
-//   "a",
-//   "an",
-//   "of",
-//   "in",
-//   "on",
-//   "at",
-//   "by",
-//   "with",
-//   "from",
-// ]);
-
-// const EXPENSE_TRIGGERS = new Set(["spent", "buy", "paid", "purchase", "on"]);
-// const INCOME_TRIGGERS = new Set([
-//   "from",
-//   "got",
-//   "earned",
-//   "received",
-//   "credit",
-// ]);
-
-// const EXPENSE_DICT = {
-//   Food: ["food", "grocery", "restaurant", "cafe", "dinner", "lunch"],
-//   Clothes: ["clothes", "fashion", "mall", "boutique", "shirt", "pants"],
-//   Furniture: ["furniture", "sofa", "table", "chair", "bed"],
-//   Transport: ["taxi", "uber", "bus", "train", "fuel", "gas"],
-//   Entertainment: ["movie", "netflix", "concert", "game"],
-//   Utilities: ["electricity", "water", "internet", "power", "bill"],
-// };
-// const INCOME_DICT = {
-//   Salary: ["salary", "wages", "pay", "income"],
-//   Gift: ["gift", "bonus", "present", "award"],
-//   Refund: ["refund", "reimbursement"],
-// };
-
-// export function parseAndCategorizeText(text) {
-//   const records = [];
-
-//   // 1) Split into clauses (sentences) by punctuation or newlines
-//   const clauses = text
-//     .split(/[\r\n]+|[.;?!]+/)
-//     .map((c) => c.trim())
-//     .filter(Boolean);
-
-//   // Helper: find which category keyword appears first (for store)
-//   function findStoreKeyword(words, keywords) {
-//     for (const w of words) {
-//       if (keywords.includes(w)) {
-//         return w;
-//       }
-//     }
-//     return null;
-//   }
-
-//   clauses.forEach((clause) => {
-//     const lc = clause.toLowerCase();
-
-//     // 2) Find all numeric amounts in this clause
-//     const amtRegex = /\b(\d+(?:\.\d{1,2})?)\b/g;
-//     let match;
-//     const amounts = [];
-//     while ((match = amtRegex.exec(lc)) !== null) {
-//       amounts.push({
-//         value: parseFloat(match[1]),
-//         index: match.index,
-//         length: match[1].length,
-//       });
-//     }
-//     if (!amounts.length) return;
-
-//     // 3) Count expense vs. income triggers once per clause
-//     let scoreExp = 0,
-//       scoreInc = 0;
-//     lc.split(/\s+/).forEach((w) => {
-//       if (EXPENSE_TRIGGERS.has(w)) scoreExp++;
-//       if (INCOME_TRIGGERS.has(w)) scoreInc++;
-//     });
-//     const type = scoreInc > scoreExp ? "income" : "expense";
-
-//     // 4) For each amount, isolate its own context and category
-//     amounts.forEach(({ value: amount, index, length }) => {
-//       // 4a) Extract a rough “itemsPart” around this amount:
-//       //     Try to find the last trigger word (“on” for expense or “from” for income) before this index
-//       const splitKeyword = type === "expense" ? " on " : " from ";
-//       let itemsPart = "";
-//       const idxSplit = lc.lastIndexOf(splitKeyword, index);
-//       if (idxSplit !== -1) {
-//         // Everything after that “on” or “from”
-//         itemsPart = lc.substring(idxSplit + splitKeyword.length).trim();
-//       } else {
-//         // Fallback: remove *this* numeric substring and use the rest
-//         const before = clause.slice(0, index);
-//         const after = clause.slice(index + length);
-//         itemsPart = (before + " " + after).trim();
-//       }
-
-//       // 5) Split itemsPart on commas or “and” to handle multiple items
-//       const rawItems = itemsPart
-//         .split(/,|\band\b/)
-//         .map((s) => s.trim())
-//         .filter(Boolean);
-//       if (!rawItems.length) {
-//         rawItems.push(""); // ensure at least one pass
-//       }
-
-//       // 6) For each raw item, pick a category and a store keyword
-//       rawItems.forEach((raw) => {
-//         const dict = type === "expense" ? EXPENSE_DICT : INCOME_DICT;
-//         // Remove stop words and split into tokens
-//         const words = raw
-//           .toLowerCase()
-//           .split(/\s+/)
-//           .filter((w) => !STOP_WORDS.has(w));
-
-//         // 6a) Determine best category by counting keyword matches
-//         let bestCat = type === "expense" ? "Others" : "Other Income";
-//         let bestScore = 0;
-//         Object.entries(dict).forEach(([cat, kws]) => {
-//           const score = words.reduce(
-//             (acc, w) => acc + (kws.includes(w) ? 1 : 0),
-//             0
-//           );
-//           if (score > bestScore) {
-//             bestScore = score;
-//             bestCat = cat;
-//           }
-//         });
-
-//         // 6b) Determine store: pick the first matching keyword from that category; else fallback to category name
-//         const catKeywords = dict[bestCat] || [];
-//         const storeKeyword = findStoreKeyword(words, catKeywords);
-//         const store = storeKeyword || bestCat;
-
-//         records.push({
-//           type,
-//           amount,
-//           category: bestCat,
-//           store,
-//           date: new Date().toISOString(),
-//         });
-//       });
-//     });
-//   });
-
-//   return records;
-// }
-
-// File: src/utils/parseTransactions.js
-
-// File: src/utils/parseTransactions.js
-
-// Stop‐words that we ignore when picking up category/store keywords:
-// const STOP_WORDS = new Set([
-//   "the",
-//   "and",
-//   "for",
-//   "to",
-//   "a",
-//   "an",
-//   "of",
-//   "in",
-//   "on",
-//   "at",
-//   "by",
-//   "with",
-//   "from",
-// ]);
-
-// // Trigger words used to guess expense vs. income:
-// const EXPENSE_TRIGGERS = new Set(["spent", "buy", "paid", "purchase", "on"]);
-// const INCOME_TRIGGERS = new Set([
-//   "from",
-//   "got",
-//   "earned",
-//   "received",
-//   "credit",
-// ]);
-
-// // Keyword dictionary for picking an expense category:
-// const EXPENSE_DICT = {
-//   Food: ["food", "grocery", "restaurant", "cafe", "dinner", "lunch"],
-//   Clothes: ["clothes", "fashion", "mall", "boutique", "shirt", "pants"],
-//   Furniture: ["furniture", "sofa", "table", "chair", "bed"],
-//   Transport: ["taxi", "uber", "bus", "train", "fuel", "gas"],
-//   Entertainment: ["movie", "netflix", "concert", "game"],
-//   Utilities: ["electricity", "water", "internet", "power", "bill"],
-// };
-// // Keyword dictionary for picking an income category:
-// const INCOME_DICT = {
-//   Salary: ["salary", "wages", "pay", "income"],
-//   Gift: ["gift", "bonus", "present", "award"],
-//   Refund: ["refund", "reimbursement"],
-// };
-
-// // Helper: pick the first matching keyword in `keywords` that appears in `words`
-// function findStoreKeyword(words, keywords) {
-//   for (const w of words) {
-//     if (keywords.includes(w)) {
-//       return w;
-//     }
-//   }
-//   return null;
-// }
-
-// // Main parser function:
-// export function parseAndCategorizeText(text) {
-//   const records = [];
-
-//   // 1) Split the input into "clauses" by punctuation or newlines:
-//   //    (We will detect type at the clause level, then break the clause on "and".)
-//   const clauses = text
-//     .split(/[\r\n]+|[.;?!]+/)
-//     .map((c) => c.trim())
-//     .filter(Boolean);
-
-//   clauses.forEach((clause) => {
-//     const lcClause = clause.toLowerCase();
-
-//     // ────────────────────────────────────────────────────────────────────────────
-//     // 2) Determine type (expense vs. income) at the *clause* level,
-//     //    by counting trigger words across the entire clause.
-//     // ────────────────────────────────────────────────────────────────────────────
-//     let scoreExpClause = 0,
-//       scoreIncClause = 0;
-//     lcClause.split(/\s+/).forEach((w) => {
-//       if (EXPENSE_TRIGGERS.has(w)) scoreExpClause++;
-//       if (INCOME_TRIGGERS.has(w)) scoreIncClause++;
-//     });
-//     const clauseType = scoreIncClause > scoreExpClause ? "income" : "expense";
-
-//     // ────────────────────────────────────────────────────────────────────────────
-//     // 3) Now split this clause on " and " (case‐insensitive),
-//     //    so that "…3000 on food and 4000 on clothes" yields two sub‐clauses.
-//     // ────────────────────────────────────────────────────────────────────────────
-//     const subClauses = lcClause.split(/\s+and\s+/).map((s) => s.trim());
-
-//     subClauses.forEach((sub) => {
-//       // 4) In each sub‐clause, find the first numeric amount:
-//       const amtMatch = sub.match(/\b(\d+(?:\.\d{1,2})?)\b/);
-//       if (!amtMatch) return; // no numeric → skip
-
-//       const amount = parseFloat(amtMatch[1]);
-
-//       // 5) For itemsPart, look for "on " if expense or "from " if income,
-//       //    otherwise fallback to removing the numeric substring.
-//       let itemsPart = "";
-//       if (clauseType === "expense") {
-//         const idxOn = sub.indexOf("on ");
-//         if (idxOn !== -1) {
-//           itemsPart = sub.substring(idxOn + 3).trim();
-//         } else {
-//           // fallback: remove the numeric substring
-//           itemsPart = sub.replace(amtMatch[1], "").trim();
-//         }
-//       } else {
-//         // income:
-//         const idxFrom = sub.indexOf("from ");
-//         if (idxFrom !== -1) {
-//           itemsPart = sub.substring(idxFrom + 5).trim();
-//         } else {
-//           itemsPart = sub.replace(amtMatch[1], "").trim();
-//         }
-//       }
-
-//       // 6) Split itemsPart on commas (if any), otherwise treat as single item:
-//       const rawItems = itemsPart
-//         .split(/,/)
-//         .map((s) => s.trim())
-//         .filter(Boolean);
-//       if (rawItems.length === 0) {
-//         rawItems.push("");
-//       }
-
-//       rawItems.forEach((raw) => {
-//         // 6a) Tokenize and remove stop‐words:
-//         const words = raw
-//           .split(/\s+/)
-//           .map((w) => w.replace(/[^a-zA-Z0-9]/g, "")) // strip punctuation
-//           .filter((w) => w && !STOP_WORDS.has(w));
-
-//         // 6b) Pick best category from the appropriate dictionary:
-//         const dict = clauseType === "expense" ? EXPENSE_DICT : INCOME_DICT;
-//         let bestCat = clauseType === "expense" ? "Others" : "Other Income";
-//         let bestScore = 0;
-//         Object.entries(dict).forEach(([cat, kws]) => {
-//           const score = words.reduce(
-//             (acc, w) => acc + (kws.includes(w) ? 1 : 0),
-//             0
-//           );
-//           if (score > bestScore) {
-//             bestScore = score;
-//             bestCat = cat;
-//           }
-//         });
-
-//         // 6c) Pick a "store" keyword from that category if possible:
-//         const catKeywords = dict[bestCat] || [];
-//         const storeKeyword = findStoreKeyword(words, catKeywords);
-//         const store = storeKeyword || bestCat;
-
-//         // 6d) Push a single record with the *clause-level* type
-//         records.push({
-//           type: clauseType,
-//           amount,
-//           category: bestCat,
-//           store,
-//           date: new Date().toISOString(),
-//         });
-//       });
-//     });
-//   });
-
-//   return records;
-// }
-// File: src/utils/parseTransactions.js
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Stop‐words that we ignore when picking up category/store keywords:
-// ─────────────────────────────────────────────────────────────────────────────
-const STOP_WORDS = new Set([
-  "the",
-  "and",
-  "for",
-  "to",
-  "a",
-  "an",
-  "of",
-  "in",
-  "on",
-  "at",
-  "by",
-  "with",
-  "from",
+const EXPENSE_VERBS = new Set([
+  "spent",
+  "bought",
+  "paid",
+  "purchased",
+  "cost",
+  "expense",
 ]);
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Now include “salary” and “bonus” (alongside "got", "earned", etc.) so that
-// phrases like “salary of 20000” or “bonus of 10000” are detected as income.
-// ─────────────────────────────────────────────────────────────────────────────
-const EXPENSE_TRIGGERS = new Set(["spent", "buy", "paid", "purchase", "on"]);
-const INCOME_TRIGGERS = new Set([
-  "from",
+const INCOME_VERBS = new Set([
   "got",
-  "earned",
   "received",
-  "credit",
-  "salary", // ← newly added
-  "bonus", // ← newly added
+  "earned",
+  "salary",
+  "income",
+  "paid",
 ]);
+const EXPENSE_PREPS = new Set(["on", "for", "at", "from"]);
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Keyword dictionary for picking an expense category:
-// ─────────────────────────────────────────────────────────────────────────────
+const RELATIVE_DATES = {
+  yesterday: -1,
+  today: 0,
+  tomorrow: 1,
+};
+
 const EXPENSE_DICT = {
-  Food: ["food", "grocery", "restaurant", "cafe", "dinner", "lunch"],
-  Clothes: ["clothes", "fashion", "mall", "boutique", "shirt", "pants"],
-  Furniture: ["furniture", "sofa", "table", "chair", "bed"],
-  Transport: ["taxi", "uber", "bus", "train", "fuel", "gas"],
-  Entertainment: ["movie", "netflix", "concert", "game"],
-  Utilities: ["electricity", "water", "internet", "power", "bill"],
-};
-// ─────────────────────────────────────────────────────────────────────────────
-// Keyword dictionary for picking an income category:
-// ─────────────────────────────────────────────────────────────────────────────
-const INCOME_DICT = {
-  Salary: ["salary", "wages", "pay", "income"],
-  Gift: ["gift", "bonus", "present", "award"],
-  Refund: ["refund", "reimbursement"],
+  Food: [
+    "food",
+    "groceries",
+    "restaurant",
+    "meal",
+    "lunch",
+    "dinner",
+    "breakfast",
+  ],
+  Transport: ["transport", "bus", "taxi", "uber", "fuel", "petrol", "gas"],
+  Shopping: ["shopping", "clothes", "shirt", "shoes", "dress"],
+  Bills: ["bill", "electricity", "water", "internet", "phone"],
+  Others: [],
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Helper: pick the first matching keyword from `keywords` that appears in `words`
-// ─────────────────────────────────────────────────────────────────────────────
-function findStoreKeyword(words, keywords) {
-  for (const w of words) {
-    if (keywords.includes(w)) {
-      return w;
+const INCOME_DICT = {
+  Salary: ["salary", "wage", "pay", "paycheck", "income"],
+  Freelance: ["freelance", "project", "client", "work"],
+  "Other Income": [],
+};
+
+// Custom algorithm for transaction extraction
+class CustomTransactionExtractor {
+  constructor() {
+    this.patterns = [
+      // Pattern: "spent X on Y"
+      /(?:spent|paid|bought)\s+(\d+(?:\.\d+)?)\s+(?:on|for|at)\s+([^,.]+)/gi,
+      // Pattern: "got X from Y"
+      /(?:got|received|earned)\s+(\d+(?:\.\d+)?)\s+(?:from|as)\s+([^,.]+)/gi,
+      // Pattern: "X for Y"
+      /(\d+(?:\.\d+)?)\s+(?:for|on)\s+([^,.]+)/gi,
+      // Pattern: "salary X from Y"
+      /(?:salary|income|wage)\s+(?:of\s+)?(\d+(?:\.\d+)?)\s+(?:from\s+)?([^,.]*)/gi,
+    ];
+  }
+
+  extractTransactions(text) {
+    const transactions = [];
+    const processedText = text.toLowerCase().trim();
+
+    // Split by common separators
+    const sentences = processedText
+      .split(/[,;]|(?:\s+and\s+)/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    for (const sentence of sentences) {
+      const transaction = this.parseTransaction(sentence);
+      if (transaction) {
+        transactions.push(transaction);
+      }
+    }
+
+    return transactions;
+  }
+
+  parseTransaction(sentence) {
+    const words = this.tokenizeAndClean(sentence);
+    const numberIndex = this.findFirstNumberIndex(words);
+
+    if (numberIndex === -1) return null;
+
+    const amount = Number.parseFloat(words[numberIndex]);
+    const type = this.determineType(words);
+
+    if (!type) return null;
+
+    const description = this.extractDescription(words, numberIndex, type);
+    const category = this.categorizeTransaction(description, type);
+    const date = this.extractDate(words);
+
+    return {
+      type,
+      amount,
+      category,
+      store: description || category,
+      date: date.toISOString(),
+    };
+  }
+
+  tokenizeAndClean(text) {
+    return text
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, " ")
+      .split(/\s+/)
+      .filter(Boolean);
+  }
+
+  findFirstNumberIndex(words) {
+    return words.findIndex(
+      (w) => !isNaN(Number.parseFloat(w)) && isFinite(Number.parseFloat(w))
+    );
+  }
+
+  determineType(words) {
+    const hasExpenseVerb = words.some((w) => EXPENSE_VERBS.has(w));
+    const hasIncomeVerb = words.some((w) => INCOME_VERBS.has(w));
+
+    if (hasExpenseVerb && !hasIncomeVerb) return "expense";
+    if (hasIncomeVerb && !hasExpenseVerb) return "income";
+
+    // Additional context-based detection
+    if (
+      words.includes("salary") ||
+      words.includes("wage") ||
+      words.includes("income")
+    ) {
+      return "income";
+    }
+
+    return "expense"; // Default to expense
+  }
+
+  extractDescription(words, numberIndex, type) {
+    if (type === "expense") {
+      const prepIndex = words.findIndex(
+        (w, i) => i > numberIndex && EXPENSE_PREPS.has(w)
+      );
+      return prepIndex !== -1
+        ? words.slice(prepIndex + 1).join(" ")
+        : words.slice(numberIndex + 1).join(" ");
+    } else {
+      const fromIndex = words.findIndex(
+        (w, i) => i > numberIndex && w === "from"
+      );
+      return fromIndex !== -1
+        ? words.slice(fromIndex + 1).join(" ")
+        : words.slice(0, numberIndex).join(" ");
     }
   }
-  return null;
+
+  categorizeTransaction(description, type) {
+    const dict = type === "expense" ? EXPENSE_DICT : INCOME_DICT;
+    let bestCategory = type === "expense" ? "Others" : "Other Income";
+    let bestScore = 0;
+
+    const descWords = description ? description.split(/\s+/) : [];
+
+    Object.entries(dict).forEach(([category, keywords]) => {
+      const score = descWords.filter((word) => keywords.includes(word)).length;
+      if (score > bestScore) {
+        bestScore = score;
+        bestCategory = category;
+      }
+    });
+
+    return bestCategory;
+  }
+
+  extractDate(words) {
+    const date = new Date();
+    for (const [keyword, offset] of Object.entries(RELATIVE_DATES)) {
+      if (words.includes(keyword)) {
+        date.setDate(date.getDate() + offset);
+        break;
+      }
+    }
+    return date;
+  }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Main parser function
-// ─────────────────────────────────────────────────────────────────────────────
-export function parseAndCategorizeText(text) {
-  const records = [];
+// AI-Enhanced Parser using Hugging Face
+class AIEnhancedParser {
+  constructor() {
+    this.customExtractor = new CustomTransactionExtractor();
+    this.apiKey = process.env.HUGGINGFACE_API_KEY || "hf_your_api_key_here";
+  }
 
-  // 1) Split input into clauses (by punctuation or newlines)
-  const clauses = text
-    .split(/[\r\n]+|[.;?!]+/)
-    .map((c) => c.trim())
-    .filter(Boolean);
+  async parseWithAI(text) {
+    try {
+      // First, try AI-based parsing
+      const aiResult = await this.callHuggingFaceAPI(text);
+      const aiTransactions = this.processAIResponse(aiResult, text);
 
-  clauses.forEach((clause) => {
-    const lcClause = clause.toLowerCase();
+      if (aiTransactions && aiTransactions.length > 0) {
+        return aiTransactions;
+      }
+    } catch (error) {
+      console.warn(
+        "AI parsing failed, falling back to custom algorithm:",
+        error.message
+      );
+    }
 
-    // ────────────────────────────────────────────────────────────────────────────
-    // 2) Decide “expense vs. income” *at the clause level* by counting triggers
-    // ────────────────────────────────────────────────────────────────────────────
-    let scoreExpClause = 0,
-      scoreIncClause = 0;
+    // Fallback to custom algorithm
+    return this.customExtractor.extractTransactions(text);
+  }
 
-    lcClause.split(/\s+/).forEach((w) => {
-      if (EXPENSE_TRIGGERS.has(w)) scoreExpClause++;
-      if (INCOME_TRIGGERS.has(w)) scoreIncClause++;
-    });
-    const clauseType = scoreIncClause > scoreExpClause ? "income" : "expense";
+  async callHuggingFaceAPI(text) {
+    const prompt = `Extract financial transactions from this text. For each transaction, identify:
+1. Type (expense or income)
+2. Amount (number only)
+3. Description/Store
+4. Category
 
-    // ────────────────────────────────────────────────────────────────────────────
-    // 3) Split this clause on “ and ” so that multiple “and”-joined items
-    //    become separate pieces. Each inherits the same clauseType.
-    // ────────────────────────────────────────────────────────────────────────────
-    const subClauses = lcClause.split(/\s+and\s+/).map((s) => s.trim());
+Text: "${text}"
 
-    subClauses.forEach((sub) => {
-      // 4) Find the first numeric amount in the sub‐clause
-      const amtMatch = sub.match(/\b(\d+(?:\.\d{1,2})?)\b/);
-      if (!amtMatch) return; // no number → skip
+Format your response as JSON array with objects containing: type, amount, description, category`;
 
-      const amount = parseFloat(amtMatch[1]);
+    const response = await fetch(
+      "https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium",
+      {
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify({
+          inputs: prompt,
+          parameters: {
+            max_length: 200,
+            temperature: 0.3,
+          },
+        }),
+      }
+    );
 
-      // 5) Extract the “itemsPart” (words after “on” if expense, “from” if income)
-      let itemsPart = "";
-      if (clauseType === "expense") {
-        const idxOn = sub.indexOf("on ");
-        if (idxOn !== -1) {
-          itemsPart = sub.substring(idxOn + 3).trim();
-        } else {
-          itemsPart = sub.replace(amtMatch[1], "").trim();
-        }
-      } else {
-        const idxFrom = sub.indexOf("from ");
-        if (idxFrom !== -1) {
-          itemsPart = sub.substring(idxFrom + 5).trim();
-        } else {
-          itemsPart = sub.replace(amtMatch[1], "").trim();
-        }
+    if (!response.ok) {
+      throw new Error(`AI API failed: ${response.status}`);
+    }
+
+    return await response.json();
+  }
+
+  processAIResponse(aiResponse, originalText) {
+    try {
+      // Process AI response and extract structured data
+      // This is a simplified version - you might need to adjust based on actual AI response format
+      const transactions = [];
+
+      // If AI parsing fails or returns unexpected format, fall back to custom algorithm
+      if (!aiResponse || !Array.isArray(aiResponse)) {
+        return this.customExtractor.extractTransactions(originalText);
       }
 
-      // 6) Split itemsPart on commas (if any), otherwise single item
-      const rawItems = itemsPart
-        .split(/,/)
-        .map((s) => s.trim())
-        .filter(Boolean);
-      if (rawItems.length === 0) {
-        rawItems.push("");
-      }
+      // Process AI response (this would need to be adapted based on actual AI model response)
+      return this.customExtractor.extractTransactions(originalText);
+    } catch (error) {
+      console.warn("AI response processing failed:", error);
+      return this.customExtractor.extractTransactions(originalText);
+    }
+  }
 
-      rawItems.forEach((raw) => {
-        // 6a) Tokenize + strip punctuation + remove stop‐words
-        const words = raw
-          .split(/\s+/)
-          .map((w) => w.replace(/[^a-zA-Z0-9]/g, ""))
-          .filter((w) => w && !STOP_WORDS.has(w));
+  // Enhanced parsing with better sentence splitting
+  enhancedSentenceSplit(text) {
+    // Use regex to better split compound sentences
+    const patterns = [
+      /\s+and\s+(?=i\s+(?:spent|got|received|earned|paid|bought))/gi,
+      /[,;]\s*(?=i\s+(?:spent|got|received|earned|paid|bought))/gi,
+      /\.\s*(?=i\s+(?:spent|got|received|earned|paid|bought))/gi,
+    ];
 
-        // 6b) Choose the best category from the appropriate dictionary
-        const dict = clauseType === "expense" ? EXPENSE_DICT : INCOME_DICT;
-        let bestCat = clauseType === "expense" ? "Others" : "Other Income";
-        let bestScore = 0;
-        Object.entries(dict).forEach(([cat, kws]) => {
-          const score = words.reduce(
-            (acc, w) => acc + (kws.includes(w) ? 1 : 0),
-            0
-          );
-          if (score > bestScore) {
-            bestScore = score;
-            bestCat = cat;
-          }
-        });
+    let sentences = [text];
 
-        // 6c) Choose a “store” keyword: first matching keyword for that category
-        const catKeywords = dict[bestCat] || [];
-        const storeKeyword = findStoreKeyword(words, catKeywords);
-        const store = storeKeyword || bestCat;
-
-        // 6d) Push a single parsed record
-        records.push({
-          type: clauseType,
-          amount,
-          category: bestCat,
-          store,
-          date: new Date().toISOString(),
-        });
+    patterns.forEach((pattern) => {
+      const newSentences = [];
+      sentences.forEach((sentence) => {
+        newSentences.push(...sentence.split(pattern));
       });
+      sentences = newSentences;
     });
-  });
 
-  return records;
+    return sentences.map((s) => s.trim()).filter(Boolean);
+  }
+}
+
+// Main parsing function
+export async function parseAndCategorizeText(text) {
+  const parser = new AIEnhancedParser();
+
+  try {
+    // Enhanced sentence splitting first
+    const sentences = parser.enhancedSentenceSplit(text);
+    const allTransactions = [];
+
+    for (const sentence of sentences) {
+      const transactions = await parser.parseWithAI(sentence);
+      allTransactions.push(...transactions);
+    }
+
+    // Remove duplicates and validate
+    const uniqueTransactions = allTransactions.filter(
+      (transaction, index, self) =>
+        index ===
+        self.findIndex(
+          (t) =>
+            t.type === transaction.type &&
+            t.amount === transaction.amount &&
+            t.store === transaction.store
+        )
+    );
+
+    const correctedText = uniqueTransactions
+      .map(formatTransaction)
+      .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+      .join(" ");
+
+    return {
+      records: uniqueTransactions,
+      correctedText,
+    };
+  } catch (error) {
+    console.error("Enhanced parsing failed:", error);
+    // Ultimate fallback to original custom algorithm
+    const customExtractor = new CustomTransactionExtractor();
+    const records = customExtractor.extractTransactions(text);
+    const correctedText = records
+      .map(formatTransaction)
+      .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+      .join(" ");
+
+    return { records, correctedText };
+  }
+}
+
+function formatTransaction(record) {
+  const typeStr = record.type === "expense" ? "spent" : "got";
+  const prep = record.type === "expense" ? "on" : "from";
+  const store = record.store.replace(/\s+/g, " ").trim();
+  return `I ${typeStr} ${record.amount} ${prep} ${store}.`;
+}
+
+// Alternative free AI service using OpenAI-compatible API
+export class AlternativeAIParser {
+  constructor() {
+    this.customExtractor = new CustomTransactionExtractor();
+  }
+
+  async parseWithOpenAICompatible(text) {
+    try {
+      // You can use services like:
+      // - Groq (free tier)
+      // - Together AI (free tier)
+      // - Replicate (free tier)
+
+      const response = await fetch(
+        "https://api.groq.com/openai/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "llama3-8b-8192",
+            messages: [
+              {
+                role: "system",
+                content:
+                  "You are a financial transaction parser. Extract transactions from text and return them as JSON array with fields: type (expense/income), amount (number), description (string), category (string).",
+              },
+              {
+                role: "user",
+                content: `Parse this text: "${text}"`,
+              },
+            ],
+            temperature: 0.1,
+            max_tokens: 500,
+          }),
+        }
+      );
+
+      const result = await response.json();
+      return this.processOpenAIResponse(result, text);
+    } catch (error) {
+      console.warn("Alternative AI parsing failed:", error);
+      return this.customExtractor.extractTransactions(text);
+    }
+  }
+
+  processOpenAIResponse(response, originalText) {
+    try {
+      const content = response.choices?.[0]?.message?.content;
+      if (!content) throw new Error("No content in AI response");
+
+      const jsonMatch = content.match(/\[[\s\S]*\]/);
+      if (jsonMatch) {
+        const transactions = JSON.parse(jsonMatch[0]);
+        return transactions.map((t) => ({
+          type: t.type,
+          amount: Number.parseFloat(t.amount),
+          category:
+            t.category || (t.type === "expense" ? "Others" : "Other Income"),
+          store: t.description || t.store || "Unknown",
+          date: new Date().toISOString(),
+        }));
+      }
+    } catch (error) {
+      console.warn("Failed to process AI response:", error);
+    }
+
+    return this.customExtractor.extractTransactions(originalText);
+  }
 }

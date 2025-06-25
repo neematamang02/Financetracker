@@ -7,7 +7,7 @@ import { fileURLToPath } from "url";
 
 import authRoutes from "./routes/authRoutes.js";
 import exportRoutes from "./routes/ExportRoutes.js";
-import receiptRoutes from "./routes/ReceiptRoutes.js";
+// import receiptRoutes from "./routes/ReceiptRoutes.js";
 import goalsRouter from "./routes/Goals.js";
 import categoryRouter from "./routes/categoryRoutes.js";
 import router from "./routes/ExpenseRoutes.js";
@@ -43,7 +43,7 @@ app.use("/api/categories", categoryRouter);
 app.use("/api/budget", budgetRouter);
 app.use("/api/reports", reportRoutes);
 app.use("/api/export", exportRoutes);
-app.use("/api/receipt", receiptRoutes);
+// app.use("/api/receipt", receiptRoutes);
 app.use("/api/goals", goalsRouter);
 
 // Static uploads
